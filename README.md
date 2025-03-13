@@ -3,6 +3,7 @@ CSE 325 - Group project
 
 Group members:
 Sara Latorre
+Anastasiia Shvydko
 
 
 List of ideas:
