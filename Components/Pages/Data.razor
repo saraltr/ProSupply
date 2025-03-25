@@ -1,0 +1,72 @@
+@page "/data"
+@using Microsoft.EntityFrameworkCore
+@inject AppDbContext _dbContext
+
+@* provisional page/just to display purpose *@
+
+<h2>Data in our database</h2>
+
+<h3>Suppliers Info</h3>
+@if (suppliers != null)
+{
+    <table style="width: 80%; margin: 20px auto; border-collapse: collapse; text-align: left;">
+    <thead>
+        <tr style="background-color: #f2f2f2; border-bottom: 2px solid #ddd;">
+            <th style="padding: 10px; border: 1px solid #ddd;">Supplier Name</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Phone number</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Email</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Address</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Business description</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Category</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Category description</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var s in suppliers)
+        {
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;">@s.SupplierName</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">@s.SupplierPhone</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">@s.SupplierEmail</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">@s.SupplierAddress</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">@s.SupplierDescription</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">@(s.Category != null ? s.Category.category_name : "No category")</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">@(s.Category != null ? s.Category.category_description : "No description")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+}
+
+<h3>Companies List</h3>
+
+@if (companies != null)
+{
+    <ul>
+        @foreach (var company in companies)
+        {
+            <li><strong>@company.company_name</strong> - @company.company_email</li>
+        }
+    </ul>
+}
+
+
+
+@code {
+
+    @* gets the suppliers without the users for now (must add the users model 1st) *@
+    private List<Supplier> suppliers = new();
+
+    @* gets the companies list *@
+    private List<Company> companies = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        suppliers = await _dbContext.Suppliers
+        .Include(s => s.Category) // ensure Category data is loaded with Suppliers
+        .ToListAsync();
+        companies = await _dbContext.Companies.ToListAsync();
+    }
+
+}

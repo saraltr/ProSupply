@@ -6,28 +6,34 @@ Sara Latorre
 Anastasiia Shvydko
 
 
-List of ideas:
-- App that serves as a database of suppliers. It could be applied to any industry, but I’m specifically thinking about construction. The app will function as a collection of supplier cards, each containing all relevant information, such as:
-    - Title
+Construction Supplier web application 
+Title: ProSupply 
+A web application for construction suppliers that allows its users to manage and track supplier information. It aims to help construction companies organize their supplier data, track orders, and improve their purchasing process.  
+The scope of our project: 
+1. Core features included in the project: 
+1.	CRUD operations for supplier cards 
+2.	Supplier categorization by service type 
+3.	Search and filter options for quick access to suppliers 
+4.	Contact management and follow-up notes 
+5.	Supplier quotes storage and management 
+6.	Order tracking 
+7.	Role-based dashboards (admin, manager, regular user) 
+Addition features (not included in the project): 
+1.	Multi-user access  
+2.	Financial transactions 
+Functional Requirements 
+1.	Users should be assigned different roles based on their permissions 
+2.	Companies registered should be able to create, edit, delete, and view supplier details. 
+3.	Users should be able to upload and manage supplier quotes 
+4.	The system should be able to track order statutes and updates 
  
-    - URL
+Non-Functional Requirements 
  
-    - Contacts
-    
-    - Category (industry or service type)
+Usability Requirements: 
  
-    - Specific notes (e.g., when the manager last contacted the supplier or plans to follow up)
- 
-    - The application will allow users to create, edit, and delete supplier cards. It will also include filtering options to quickly find information based on any criteria.
-
-- Hotel Booking Website
-    - List of hotels with details
-    - Authentification for the user with user dashboard
-    - Ability to book a room
-    - list your own hotel to the site
-- E-comerce website
-    - Catalogue of items
-    - Registration to your own profile
-    - Admin interface to manage your store
-    - Add to cart and buy items
-    - Add items and delete them from the site
+2.	User-friendly interface and responsiveness
+3.	Client’s side validation 
+4.	Access control for role-based users 
+5.	Secure authentication 
+6.	Data encryption when added to the database 
+Target audience: Construction companies, project managers, contractors, architects, and BIM managers.
