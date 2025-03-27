@@ -1,0 +1,66 @@
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+
+<div class="top-nav background-image-container">
+    @if (!IsHomePage)
+    {
+        <button class="back-btn" @onclick="GoBack">
+            <i class="bi bi-chevron-left"></i> Back
+        </button>
+    }
+    <h2>@FormattedRoute</h2>
+    <button class="login-btn">Sign In</button>
+</div>
+
+@code {
+    private string FormattedRoute = "";
+    private bool IsHomePage = false; // check if it's the home page
+    private string userName = "John"; // to replace with actual user name from our authentication system
+
+    protected override void OnInitialized()
+    {
+        var uri = Navigation.Uri;
+
+        // extract the path after the domain (excluding query parameters)
+        var path = new Uri(uri).AbsolutePath.Trim('/');
+
+        // check if the current route is the home page
+        IsHomePage = string.IsNullOrEmpty(path); // home page if the path is empty
+
+        if (IsHomePage)
+        {
+            FormattedRoute = userName != null ? $"Welcome back, {userName}!" : "Welcome to ProSupply! Explore our supplies.";
+        }
+        else
+        {
+            // display the route name
+            FormattedRoute = char.ToUpper(path[0]) + path.Substring(1);
+        }
+    }
+
+    @* private async Task GoBack()
+    // doesn't work for some reason
+    {
+        var historyLength = await JSRuntime.InvokeAsync<int>("window.history.length");
+
+        // if there's a history to go back to navigate back
+        if (historyLength > 1)
+        {
+            await JSRuntime.InvokeVoidAsync("window.history.back");
+        }
+        else
+        {
+            // otherwise navigate to the homepage
+            Navigation.NavigateTo("/");
+        }
+    } *@
+
+    private void GoBack()
+    {
+        // always redirect to the home page
+        Navigation.NavigateTo("/", true); // 'true' ensures the page is reloaded
+    }
+
+
+}

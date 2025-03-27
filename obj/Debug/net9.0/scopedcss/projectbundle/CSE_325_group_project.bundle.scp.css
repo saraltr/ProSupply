@@ -1,3 +1,76 @@
+/* _content/CSE_325_group_project/Components/Layout/Header.razor.rz.scp.css */
+.background-image-container[b-7fil1qll5u] {
+    position: relative;
+    background-image: url('https://images.unsplash.com/photo-1565008447742-97f6f38c985c?q=80&w=1931&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+    background-size: cover;
+    background-position: center;
+    padding: 10rem;
+    z-index: -2;
+}
+
+.background-image-container[b-7fil1qll5u]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(21, 20, 20, 0.5);
+    z-index: -1;
+}
+
+.top-nav[b-7fil1qll5u] {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    /* Space between the two elements */
+    align-items: center;
+    width: 100%;
+    padding: 20px;
+}
+
+.top-nav h2[b-7fil1qll5u] {
+    font-size: 2rem;
+    color: white;
+    margin: 0;
+    /* Remove any default margins */
+}
+
+.login-btn[b-7fil1qll5u] {
+    background-color: #2c3e50;
+    color: white;
+    font-size: 18px;
+    padding: 14px 30px;
+    border: 1px solid transparent;
+    border-radius: .5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-btn:hover[b-7fil1qll5u] {
+    background-color: #34495e;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.login-btn:focus[b-7fil1qll5u] {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.5);
+}
+
+.back-btn[b-7fil1qll5u] {
+    background-color: transparent;
+    color: white;
+    font-size: 18px;
+    border: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.back-btn:hover[b-7fil1qll5u] {
+    text-decoration: underline;
+}
 /* _content/CSE_325_group_project/Components/Layout/MainLayout.razor.rz.scp.css */
 .page[b-ivq1ct8xhc] {
     position: relative;
@@ -105,14 +178,75 @@ main[b-ivq1ct8xhc] {
     height: 2.5rem;
     color: white;
     position: absolute;
-    top: 0.5rem;
+    top: 1.5rem;
     right: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") no-repeat center/1.75rem rgba(255, 255, 255, 0.1);
+    background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") no-repeat center/1.75rem;
+    transition: all 0.3s ease;
+}
+
+.navbar-brand h1[b-eoz70oxa56] {
+    font-size: 2.5rem;
+    font-weight: 500;
+    letter-spacing: .5px;
+    margin-bottom: .5rem;
+}
+
+.supply[b-eoz70oxa56] {
+    font-weight: 400;
+    color: #7492AF;
+    margin-left: 0.2rem;
+}
+
+.navbar-brand h1:hover .supply[b-eoz70oxa56] {
+    color: #A4B8A1;
+}
+.sidebar-modern[b-eoz70oxa56], .top-row.navbar[b-eoz70oxa56] {
+    background-color: #1F2937;
+    color: white;
+    padding-top: 1rem;
+}
+
+.sidebar-modern .nav-item[b-eoz70oxa56] {
+    transition: background 0.3s ease-in-out;
+    position: relative;
+}
+
+.sidebar-modern .nav-link[b-eoz70oxa56] {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 6px;
+    transition: background 0.3s ease-in-out, color 0.2s;
+}
+
+.sidebar-modern .nav-link:hover[b-eoz70oxa56] {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.sidebar-modern .nav-text[b-eoz70oxa56] {
+    margin-left: 0.75rem;
+    font-size: 0.95rem;
+}
+
+.sidebar-modern .badge[b-eoz70oxa56] {
+    background-color: red;
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    margin-left: auto;
+}
+
+/* Icons */
+.bi[b-eoz70oxa56] {
+    font-size: 1.25rem;
 }
 
 .navbar-toggler:checked[b-eoz70oxa56] {
     background-color: rgba(255, 255, 255, 0.5);
+    border-radius: .2rem;
+    transition: background 0.3s ease, background-image 0.3s ease;
 }
 
 .top-row[b-eoz70oxa56] {
@@ -138,14 +272,6 @@ main[b-ivq1ct8xhc] {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' class='bi bi-house-door-fill' viewBox='0 0 16 16'%3E%3Cpath d='M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5Z'/%3E%3C/svg%3E");
 }
 
-.bi-plus-square-fill-nav-menu[b-eoz70oxa56] {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' class='bi bi-plus-square-fill' viewBox='0 0 16 16'%3E%3Cpath d='M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z'/%3E%3C/svg%3E");
-}
-
-.bi-list-nested-nav-menu[b-eoz70oxa56] {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' class='bi bi-list-nested' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M4.5 11.5A.5.5 0 0 1 5 11h10a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm-2-4A.5.5 0 0 1 3 7h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm-2-4A.5.5 0 0 1 1 3h10a.5.5 0 0 1 0 1H1a.5.5 0 0 1-.5-.5z'/%3E%3C/svg%3E");
-}
-
 .nav-item[b-eoz70oxa56] {
     font-size: 0.9rem;
     padding-bottom: 0.5rem;
@@ -167,7 +293,6 @@ main[b-ivq1ct8xhc] {
         height: 3rem;
         display: flex;
         align-items: center;
-        line-height: 3rem;
         width: 100%;
     }
 
@@ -183,6 +308,7 @@ main[b-ivq1ct8xhc] {
 
 .nav-scrollable[b-eoz70oxa56] {
     display: none;
+    transition: opacity 0.3s ease, transform 0.4s ease;
 }
 
 .navbar-toggler:checked ~ .nav-scrollable[b-eoz70oxa56] {
