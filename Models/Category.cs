@@ -1,6 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+namespace CSE_325_group_project.Models
+{
+
 [Table("category")]
 
 public class Category
@@ -13,4 +16,5 @@ public class Category
 
     [Required, StringLength(45)]
     public required string category_description {get; set;}
+}
 }

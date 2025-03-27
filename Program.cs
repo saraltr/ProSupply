@@ -2,12 +2,14 @@ using CSE_325_group_project.Components;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using dotenv.net;
+using CSE_325_group_project.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.AddHttpClient();
 
 // load .env file
 DotEnv.Load();

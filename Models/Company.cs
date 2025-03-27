@@ -1,6 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+namespace CSE_325_group_project.Models
+{
+
 [Table("company")]
 public class Company
 {
@@ -8,16 +11,16 @@ public class Company
     public int company_id { get; set; }
 
     [Required, StringLength(70)]
-    public required string company_name { get; set; }
+    public  string? company_name { get; set; }
 
     [Required, StringLength(45)]
-    public required string company_phone { get; set; }
+    public  string? company_phone { get; set; }
 
     [Required, StringLength(45)]
-    public required string company_email { get; set; }
+    public  string? company_email { get; set; }
 
     [Required]
-    public required string company_address { get; set; }
+    public  string? company_address { get; set; }
 
     public string? company_description { get; set; } 
 
@@ -26,4 +29,5 @@ public class Company
 
     [Required]
     public int user_id { get; set; }
+}
 }

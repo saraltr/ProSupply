@@ -2838,19 +2838,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\saral\\.nuget\\packages\\": {}
+    "/Users/nastia_shvydko/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\saral\\Desktop\\Spring25\\cse325-group-project\\CSE_325_group_project\\CSE_325_group_project.csproj",
+      "projectUniqueName": "/Users/nastia_shvydko/CSE325_TeamProject/CSE_325_group_project/CSE_325_group_project.csproj",
       "projectName": "CSE_325_group_project",
-      "projectPath": "C:\\Users\\saral\\Desktop\\Spring25\\cse325-group-project\\CSE_325_group_project\\CSE_325_group_project.csproj",
-      "packagesPath": "C:\\Users\\saral\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\saral\\Desktop\\Spring25\\cse325-group-project\\CSE_325_group_project\\obj\\",
+      "projectPath": "/Users/nastia_shvydko/CSE325_TeamProject/CSE_325_group_project/CSE_325_group_project.csproj",
+      "packagesPath": "/Users/nastia_shvydko/.nuget/packages/",
+      "outputPath": "/Users/nastia_shvydko/CSE325_TeamProject/CSE_325_group_project/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\saral\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/Users/nastia_shvydko/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
@@ -2914,7 +2914,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.200/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.200/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
