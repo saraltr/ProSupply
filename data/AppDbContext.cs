@@ -18,14 +18,14 @@ public class AppDbContext : DbContext
             modelBuilder.Entity<Company>(entity =>
             {
                 entity.ToTable("company");
-                entity.HasKey(c => c.company_id);
-                entity.Property(c => c.company_name).IsRequired().HasMaxLength(70);
-                entity.Property(c => c.company_phone).IsRequired().HasMaxLength(45);
-                entity.Property(c => c.company_email).IsRequired().HasMaxLength(45);
-                entity.Property(c => c.company_address).IsRequired();
-                entity.Property(c => c.company_description).HasMaxLength(100);
-                entity.Property(c => c.industry_id).IsRequired();
-                entity.Property(c => c.user_id).IsRequired();
+                entity.HasKey(c => c.Company_id);
+                entity.Property(c => c.Company_name).IsRequired().HasMaxLength(70);
+                entity.Property(c => c.Company_phone).IsRequired().HasMaxLength(45);
+                entity.Property(c => c.Company_email).IsRequired().HasMaxLength(45);
+                entity.Property(c => c.Company_address).IsRequired();
+                entity.Property(c => c.Company_description).HasMaxLength(100);
+                entity.Property(c => c.Industry_id).IsRequired();
+                entity.Property(c => c.User_id).IsRequired();
             });
 
 

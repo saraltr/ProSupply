@@ -3,11 +3,17 @@
 @using CSE_325_group_project.Models;
 @using CSE_325_group_project.Data;
 @inject AppDbContext _dbContext
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
 
 
 @* provisional page/just to display purpose *@
 
-<h2>Data in our database</h2>
+<h3>Data in our database</h3>
+
+@if (suppliers == null || companies == null){
+    <p><em>Loading...</em></p>
+}
 
 <h3>Suppliers Info</h3>
 @if (suppliers != null)
@@ -33,8 +39,8 @@
                 <td style="padding: 10px; border: 1px solid #ddd;">@s.SupplierEmail</td>
                 <td style="padding: 10px; border: 1px solid #ddd;">@s.SupplierAddress</td>
                 <td style="padding: 10px; border: 1px solid #ddd;">@s.SupplierDescription</td>
-                <td style="padding: 10px; border: 1px solid #ddd;">@(s.Category != null ? s.Category.category_name : "No category")</td>
-                <td style="padding: 10px; border: 1px solid #ddd;">@(s.Category != null ? s.Category.category_description : "No description")</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">@(s.Category != null ? s.Category.Category_name : "No category")</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">@(s.Category != null ? s.Category.Category_description : "No description")</td>
             </tr>
         }
     </tbody>
@@ -49,7 +55,7 @@
     <ul>
         @foreach (var company in companies)
         {
-            <li><strong>@company.company_name</strong> - @company.company_email</li>
+            <li><strong>@company.Company_name</strong> - @company.Company_email</li>
         }
     </ul>
 }

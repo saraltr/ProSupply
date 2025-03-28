@@ -8,26 +8,34 @@ namespace CSE_325_group_project.Models
 public class Company
 {
     [Key]
-    public int company_id { get; set; }
+    [Column("company_id")]
+    public int Company_id { get; set; }
 
     [Required, StringLength(70)]
-    public  string? company_name { get; set; }
+    [Column("company_name")]
+    public  string? Company_name { get; set; }
 
     [Required, StringLength(45)]
-    public  string? company_phone { get; set; }
+    [Column("company_phone")]
+    public  string? Company_phone { get; set; }
 
     [Required, StringLength(45)]
-    public  string? company_email { get; set; }
+    [Column("company_email")]
+    public  string? Company_email { get; set; }
 
     [Required]
-    public  string? company_address { get; set; }
+    [Column("company_address")]
+    public  string? Company_address { get; set; }
 
-    public string? company_description { get; set; } 
+    [Column ("company_description")]
+    public string? Company_description { get; set; } 
 
     [Required]
-    public int industry_id { get; set; }
+    [Column ("industry_id")]
+    public int Industry_id { get; set; }
 
     [Required]
-    public int user_id { get; set; }
+    [Column ("user_id")]
+    public int User_id { get; set; }
 }
 }

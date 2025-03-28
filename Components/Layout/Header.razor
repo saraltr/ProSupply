@@ -1,0 +1,39 @@
+@inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
+
+
+<div class="top-nav background-image-container">
+    @if (!IsHomePage)
+    {
+        <button class="back-btn" onclick="history.back()">
+            <span class="bi bi-chevron-left"> Back</span>
+        </button>
+    }
+    <h2>@FormattedRoute</h2>
+    <button class="login-btn">Sign In</button>
+</div>
+
+@code {
+    private string FormattedRoute = "";
+    private bool IsHomePage = false; // check if it's the home page
+    private string userName = "John"; // to replace with actual user name from our authentication system
+
+    protected override void OnInitialized()
+    {
+        var uri = NavManager.Uri;
+        var path = new Uri(uri).AbsolutePath.Trim('/');
+
+        // check if the current route is the home page
+        IsHomePage = string.IsNullOrEmpty(path); // home page if the path is empty
+
+        if (IsHomePage)
+        {
+            FormattedRoute = userName != null ? $"Welcome back, {userName}!" : "Welcome to ProSupply! Explore our supplies.";
+        }
+        else
+        {
+            var formattedPath = path.Replace("-", " ");
+            FormattedRoute = char.ToUpper(formattedPath[0]) + formattedPath.Substring(1);
+        }
+    }
+}
