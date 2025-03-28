@@ -1,0 +1,23 @@
+@page "/profile"
+
+<section>
+    <div class="description-text">
+        <p>If you are a manager, you can:</p>
+        <ul>
+            <li>List your company on our plateform by clicking "New Company".</li>
+            <li>Propose your supplier services by clicking "New Supplier".</li>
+        </ul>
+    </div>
+
+    <NavLink href="create-company" force-load="true">
+        <button class="btn-primary">
+            <span class="bi bi-plus-circle"> &nbsp;New Company</span>
+        </button>
+    </NavLink>
+
+    <NavLink href="create-supplier" force-load="true">
+        <button class="btn-primary">
+            <span class="bi bi-plus-circle"> &nbsp;New Supplier</span>
+        </button>
+    </NavLink>
+</section>
