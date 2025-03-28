@@ -10,7 +10,6 @@
 @* provisional page/just to display purpose *@
 
 <h3>Data in our database</h3>
-<button @onclick="GoBack">Go to Home</button>
 
 @if (suppliers == null || companies == null){
     <p><em>Loading...</em></p>
@@ -40,8 +39,8 @@
                 <td style="padding: 10px; border: 1px solid #ddd;">@s.SupplierEmail</td>
                 <td style="padding: 10px; border: 1px solid #ddd;">@s.SupplierAddress</td>
                 <td style="padding: 10px; border: 1px solid #ddd;">@s.SupplierDescription</td>
-                <td style="padding: 10px; border: 1px solid #ddd;">@(s.Category != null ? s.Category.category_name : "No category")</td>
-                <td style="padding: 10px; border: 1px solid #ddd;">@(s.Category != null ? s.Category.category_description : "No description")</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">@(s.Category != null ? s.Category.Category_name : "No category")</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">@(s.Category != null ? s.Category.Category_description : "No description")</td>
             </tr>
         }
     </tbody>
@@ -56,7 +55,7 @@
     <ul>
         @foreach (var company in companies)
         {
-            <li><strong>@company.company_name</strong> - @company.company_email</li>
+            <li><strong>@company.Company_name</strong> - @company.Company_email</li>
         }
     </ul>
 }
@@ -77,12 +76,6 @@
         .Include(s => s.Category) // ensure Category data is loaded with Suppliers
         .ToListAsync();
         companies = await _dbContext.Companies.ToListAsync();
-    }
-
-    private void GoBack()
-    {
-        // Navigate to the home page
-        Navigation.NavigateTo("/", true);  // true forces a reload
     }
 
 }

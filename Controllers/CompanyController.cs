@@ -28,7 +28,7 @@ namespace CSE_325_group_project.Controllers
             {
                 _context.Companies.Add(company);
                 await _context.SaveChangesAsync();
-                return Ok(new { message = "Company added successfully", companyId = company.company_id });
+                return Ok(new { message = "Company added successfully", companyId = company.Company_id });
             }
             catch (Exception ex)
             {

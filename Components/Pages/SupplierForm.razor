@@ -1,4 +1,4 @@
-@page "/create_supplier"
+@page "/create-supplier"
 @using CSE_325_group_project.Models
 @using Microsoft.AspNetCore.Components.Forms
 @using CSE_325_group_project.Controllers
@@ -48,7 +48,7 @@
             {
                 @foreach (var category in categories)
                 {
-                    <option value="@category.category_id">@category.category_name</option>
+                    <option value="@category.Category_id">@category.Category_name</option>
                 }
             }
         </InputSelect>
@@ -67,7 +67,7 @@
             {
                 @foreach (var company in companies)
                 {
-                    <option value="@company.company_id">@company.company_name</option>
+                    <option value="@company.Company_id">@company.Company_name</option>
                 }
             }
         </InputSelect>

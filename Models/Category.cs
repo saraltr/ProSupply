@@ -9,12 +9,15 @@ namespace CSE_325_group_project.Models
 public class Category
 {
     [Key]
-    public int category_id { get; set; }
+    [Column("category_id")]
+        public int Category_id { get; set; }
 
     [Required, StringLength(45)]
-    public required string category_name {get; set;}
+    [Column("category_name")]
+        public required string Category_name {get; set;}
 
     [Required, StringLength(45)]
-    public required string category_description {get; set;}
+    [Column("category_description")]
+        public required string Category_description {get; set;}
 }
 }
