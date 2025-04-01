@@ -7,6 +7,7 @@
 @inject IJSRuntime JSRuntime
 
 
+
 @* provisional page/just to display purpose *@
 
 <h3>Data in our database</h3>
@@ -52,12 +53,59 @@
 
 @if (companies != null)
 {
-    <ul>
+ <ul class="companies-card-list">
         @foreach (var company in companies)
         {
-            <li><strong>@company.Company_name</strong> - @company.Company_email</li>
+           // <li><strong>@company.company_name</strong> - @company.company_email <a href="/edit_company/@company.company_id">EDIT</a></li>
+        <div class="company-card">
+            <a href="/edit_company/@company.Company_id" class="edit-icon"><i class="fas fa-edit"></i></a>
+            <button class="btn btn-danger" @onclick="() => ShowDeleteConfirmation(company.Company_id)">
+                        <i class="fas fa-trash"></i></button>
+            <h2>@company.Company_name</h2>
+            <p><strong>Phone:</strong> @company.Company_phone</p>
+            <p><strong>Email:</strong> @company.Company_email</p>
+            <p><strong>Address:</strong> @company.Company_address</p>
+            <p><strong>Description:</strong> @(string.IsNullOrEmpty(company.Company_description) ? "No description available" : company.Company_description)</p>
+            <p><strong>Industry:</strong> <span class="industry">@GetIndustryName(company.Industry_id)</span></p>
+        </div>
         }
-    </ul>
+    </ul> 
+
+    <ConfirmationDialog IsVisible="@showConfirmationDialog"
+                   OnConfirm="DeleteCompany"
+                   OnCancel="CancelDelete"
+                   CloseDialog="CloseDialog" />
+
+@* <div class="companies-table-data">
+    <table class="company-table">
+        <thead>
+            <tr>
+                <th class="company-header">Company Name</th>
+                <th class="company-header">Phone</th>
+                <th class="company-header">Email</th>
+                <th class="company-header">Address</th>
+                <th class="company-header">Industry</th>
+                <th class="company-header">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var company in companies)
+            {
+                <tr class="company-row">
+                    <td class="company-data">@company.company_name</td>
+                    <td class="company-data">@company.company_phone</td>
+                    <td class="company-data">@company.company_email</td>
+                    <td class="company-data">@company.company_address</td>
+                    <td class="company-data">@GetIndustryName(company.industry_id)</td>
+                    <td class="company-actions">
+                        <a href="/edit/@company.company_id" class="btn btn-edit-company"><i class="fas fa-pen"></i> Edit</a>
+                        <a href="/delete/@company.company_id" class="btn btn-delete-company"><i class="fas fa-trash"></i> Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div> *@
 }
 
 
@@ -70,12 +118,51 @@
     @* gets the companies list *@
     private List<Company> companies = new();
 
+    private bool showConfirmationDialog = false;
+    private int companyIdToDelete;
+
     protected override async Task OnInitializedAsync()
     {
         suppliers = await _dbContext.Suppliers
         .Include(s => s.Category) // ensure Category data is loaded with Suppliers
         .ToListAsync();
         companies = await _dbContext.Companies.ToListAsync();
+    }
+     string GetIndustryName(int industryId)
+        {
+            string[] industryList = { "Technology", "Manufacturing", "Retail", "Healthcare", "Automotive", "Food & Beverage" };
+            return industryId >= 1 && industryId <= industryList.Length ? industryList[industryId - 1] : "Unknown";
+        }
+
+     
+
+    private void ShowDeleteConfirmation(int companyId)
+    {
+        companyIdToDelete = companyId;
+        showConfirmationDialog = true;
+    }
+
+    private void CloseDialog()
+    {
+        showConfirmationDialog = false;
+    }
+
+    private void DeleteCompany()
+    {
+        // Logic to delete the company from the database
+        var companyToDelete = companies.FirstOrDefault(c => c.Company_id == companyIdToDelete);
+        if (companyToDelete != null)
+        {
+            companies.Remove(companyToDelete);
+            // Optionally call an API to delete it from the database
+            // DeleteCompanyFromDatabase(companyIdToDelete);
+        }
+        CloseDialog();
+    }
+
+    private void CancelDelete()
+    {
+        CloseDialog();
     }
 
 }

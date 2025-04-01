@@ -1,0 +1,171 @@
+@page "/edit_company/{id}"
+@using CSE_325_group_project.Models
+@using Microsoft.AspNetCore.Components.Forms
+@using CSE_325_group_project.Controllers
+@using Microsoft.EntityFrameworkCore
+@using CSE_325_group_project.Data;
+@inject ILogger<CompanyForm> Logger
+@inject HttpClient Http
+@inject AppDbContext _dbContext
+@inject NavigationManager Navigation
+@inject NavigationManager Navigation
+
+@rendermode RenderMode.InteractiveServer //helps to rerender after input changed
+
+
+ <EditForm Model="@Company" OnValidSubmit="HandleSubmit" FormName="EditCompanyForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+<a href="/data" class="close-icon"><i class="fas fa-times"></i></a>
+    <div class="form-group">
+        <label for="CompanyName">Company Name</label>
+        <input id="CompanyName" 
+                   class="form-control" 
+                   @bind-Value="Company!.Company_name" @bind-Value:event="oninput" />
+        <p>Current model value: @Company.Company_name</p>
+    </div>
+
+    <div class="form-group">
+        <label for="CompanyPhone">Phone</label>
+        <InputText id="CompanyPhone" 
+                   class="form-control" 
+                   @bind-Value="Company.Company_phone" />
+    </div>
+
+    <div class="form-group">
+        <label for="CompanyEmail">Email</label>
+        <InputText type="email" 
+                   id="CompanyEmail" 
+                   class="form-control" 
+                   @bind-Value="Company.Company_email" />
+    </div>
+
+    <div class="form-group">
+        <label for="CompanyAddress">Address</label>
+        <InputText id="CompanyAddress" 
+                   class="form-control" 
+                   @bind-Value="Company.Company_address" />
+    </div>
+
+    <div class="form-group">
+        <label for="IndustryId">Industry ID</label>
+        <InputNumber id="IndustryId" 
+                     class="form-control" 
+                     @bind-Value="Company.Industry_id" />
+    </div>
+
+    <div class="form-group">
+        <label for="UserId">User ID</label>
+        <InputNumber id="UserId" 
+                     class="form-control" 
+                     @bind-Value="Company.User_id" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+
+@code {
+    [Parameter]
+    public string id { get; set; } // Capture the id from the URL
+
+  [SupplyParameterFromForm]
+    private Company? Company { get; set; }
+
+   // private Company? CompanyEdit { get; set; }
+    // Simulating fetching data from a service or database
+    protected override async Task OnInitializedAsync()
+    {
+       
+        // Here you would typically fetch the company data using the id
+   
+        // For example, calling a service like: await CompanyService.GetCompanyByIdAsync(id);
+        Company ??= new() {Company_name = "Initial"};
+       // CompanyEdit ??=new() {};
+        // Simulating fetching company data
+        Company  = await GetCompanyByIdAsync(id);
+        if (Company != null)
+            {
+         @* CompanyEdit = new Company
+                {
+                    company_id = Company.company_id,
+                    company_name = Company.company_name,
+                    company_phone = Company.company_phone,
+                    company_email = Company.company_email,
+                    company_address = Company.company_address,
+                    company_description = Company.company_description,
+                    industry_id = Company.industry_id,
+                    user_id = Company.user_id
+                }; *@
+
+            }
+               
+    }
+
+    // Simulate fetching company data based on the id
+    private async Task<Company?> GetCompanyByIdAsync(string id)
+    {
+
+        Company company = await _dbContext.Companies.FirstOrDefaultAsync(c => c.Company_id == int.Parse(id));
+        // This is where you would fetch from a real API or database
+       
+
+        return company;
+    }
+
+    private async Task HandleSubmit(){
+
+        _dbContext.Companies.Update(Company);
+        _dbContext.SaveChangesAsync();
+        Console.WriteLine($"Company Info Updated: Name: {Company.Company_name}, Email: {Company.Company_email}, Address: {Company.Company_address}");
+        
+        Navigation.NavigateTo("/data");
+    }
+    
+
+        @* var existingCompany = _dbContext.Companies.Local
+                            .FirstOrDefault(c => c.company_id == CompanyEdit.company_id); *@
+
+    @* if (existingCompany != null)
+    {
+        // Detach the existing entity if it's being tracked
+        _dbContext.Entry(existingCompany).State = EntityState.Detached;
+    }
+
+    // Now update the entity with the values from the form
+    if (CompanyEdit != null)
+            Company.company_name = CompanyEdit.company_name;
+            Company.company_phone = CompanyEdit.company_phone;
+            Company.company_email = CompanyEdit.company_email;
+            Company.company_address = CompanyEdit.company_address;
+            Company.company_description = CompanyEdit.company_description;
+            Company.industry_id = CompanyEdit.industry_id;
+            Company.user_id = CompanyEdit.user_id; *@
+    
+
+    
+        // Handle form submission
+      // Handle form submission
+        @* if (CompanyEdit != null)
+
+        {
+            Company.company_name = CompanyEdit.company_name;
+            Company.company_phone = CompanyEdit.company_phone;
+            Company.company_email = CompanyEdit.company_email;
+            Company.company_address = CompanyEdit.company_address;
+            Company.company_description = CompanyEdit.company_description;
+            Company.industry_id = CompanyEdit.industry_id;
+            Company.user_id = CompanyEdit.user_id;
+
+            _dbContext.Companies.Update(CompanyEdit);
+            _dbContext.SaveChanges();
+            Console.WriteLine($"Company Info Updated: Name: {CompanyEdit.company_name}, Email: {CompanyEdit.company_email}, Address: {CompanyEdit.company_address}");
+        } *@
+    
+
+    private void CancelEdit()
+    {
+        // Handle cancel logic (for example, navigate away or reset the form)
+        Console.WriteLine("Edit canceled");
+    }
+}
