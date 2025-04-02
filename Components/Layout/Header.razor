@@ -38,16 +38,33 @@
 
             FormattedRoute = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(supplierSlug);
         }
-        else if (path.StartsWith("order"))
-        {
-            FormattedRoute = "Order";
-        }
         else
         {
-            // Generic formatting for other pages
-            var formattedPath = path.Replace("-", " ");
-            FormattedRoute = char.ToUpper(formattedPath[0]) + formattedPath.Substring(1);
+            switch (true)
+            {
+                // case for supplier Pages
+                case var _ when path.StartsWith("suppliers/"):
+                    var supplierSlug = path.Replace("suppliers/", "").Replace("-", " ");
+                    FormattedRoute = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(supplierSlug);
+                    break;
+
+                // case for order pages
+                case var _ when path.StartsWith("order"):
+                    FormattedRoute = "Order";
+                    break;
+
+                // case for edit pages
+                case var _ when path.Contains("edit_"):
+                    var editPageName = path.Split('/')[0].Replace("edit_", "").Replace("-", " ");
+                    FormattedRoute = $"Edit {CultureInfo.CurrentCulture.TextInfo.ToTitleCase(editPageName)}";
+                    break;
+
+                // default case for generic pages
+                default:
+                    var formattedPath = path.Replace("-", " ");
+                    FormattedRoute = char.ToUpper(formattedPath[0]) + formattedPath.Substring(1);
+                    break;
+            }
         }
     }
-
 }
