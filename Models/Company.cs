@@ -37,5 +37,28 @@ public class Company
     [Required]
     [Column ("user_id")]
     public int User_id { get; set; }
-}
+    
+    // constructor
+    public Company(
+            string companyName, 
+            string companyPhone, 
+            string companyEmail, 
+            string companyAddress, 
+            int industryId, 
+            int userId, 
+            string? companyDescription = null)
+    {
+        Company_name = companyName;
+        Company_phone = companyPhone;
+        Company_email = companyEmail;
+        Company_address = companyAddress;
+        Industry_id = industryId;
+        User_id = userId;
+        Company_description = companyDescription;
+    }
+
+    // parameterless constructor for EF Core
+
+    public Company() {}
+    }
 }
