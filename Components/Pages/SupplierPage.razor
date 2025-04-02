@@ -1,0 +1,116 @@
+@page "/suppliers/{name}"
+@using Microsoft.EntityFrameworkCore
+@using CSE_325_group_project.Models;
+@using CSE_325_group_project.Data;
+@inject AppDbContext _dbContext
+@inject NavigationManager Navigation
+
+<PageTitle>@(supplier?.SupplierName ?? "Supplier Page Not Found")</PageTitle>
+
+@if (supplier == null)
+{
+    <div class="alert alert-danger text-center py-4">
+        <strong>Supplier not found</strong>
+    </div>
+}
+else
+{
+    <div class="card shadow-sm rounded-lg mb-4">
+        <div class="card-header">
+            <h3>About @supplier.SupplierName</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>📞 Phone:</strong> @supplier.SupplierPhone</p>
+                    <p><strong>✉️ Email:</strong> @supplier.SupplierEmail</p>
+                    <p><strong>📍 Address:</strong> @supplier.SupplierAddress</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>ℹ️ Description:</strong> @supplier.SupplierDescription</p>
+                    <p><strong>📌 Category:</strong> @supplier.Category?.Category_name</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (supplier.Services == null || !supplier.Services.Any())
+    {
+        <div class="alert alert-warning text-center py-4">
+            <strong>No services available for this supplier.</strong>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm rounded-lg">
+            <div class="card-header">
+                <h3 class="mb-0">📋 Available Services</h3>
+            </div>
+
+            <div class="card-body">
+                <!-- Hide table on small screens -->
+                <div class="d-none d-md-block">
+                    <div class="table-responsive-md">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Services</th>
+                                    <th scope="col" class="d-none d-md-table-cell">Description</th>
+                                    <th scope="col">Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var service in supplier.Services)
+                                {
+                                    <tr>
+                                        <td>@service.ServiceName</td>
+                                        <td class="d-none d-md-table-cell">@service.ServiceDescription</td>
+                                        <td><strong>$@service.ServicePrice</strong></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="d-md-none">
+                    @foreach (var service in supplier.Services)
+                    {
+                        <div class="border p-3 rounded mb-2 shadow-sm">
+                            <h5 class="mb-1">@service.ServiceName</h5>
+                            <p class="text-muted">@service.ServiceDescription</p>
+                            <strong class="text-success">$@service.ServicePrice</strong>
+                        </div>
+                    }
+                </div>
+                <div class="d-flex justify-content-center mt-4">
+                    <NavLink href="@($"/order/{supplier.SupplierId}/{userId}")"
+                        class="btn btn-success btn-sm d-flex align-items-center justify-content-center px-4 py-2">
+                        <i class="bi bi-cart-plus me-2"></i> Order Now
+                    </NavLink>
+                </div>
+
+
+            </div>
+        </div>
+    }
+}
+
+@code {
+    [Parameter]
+    public string name { get; set; } = string.Empty;
+
+    private Supplier? supplier;
+    private int userId = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        string formattedName = name.Replace("-", " ");
+
+        supplier = await _dbContext.Suppliers
+        .AsNoTracking()
+        .Include(s => s.Category)
+        .Include(s => s.Services)
+        .FirstOrDefaultAsync(s => s.SupplierName.ToLower() == formattedName.ToLower());
+    }
+}

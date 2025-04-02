@@ -1,0 +1,171 @@
+@page "/order/{supplierId:int}/{userId:int}"
+@using Microsoft.AspNetCore.Components.Forms
+@using CSE_325_group_project.Models;
+@using CSE_325_group_project.Data;
+@using Microsoft.EntityFrameworkCore
+@inject NavigationManager Navigation
+@inject HttpClient HttpClient
+@inject AppDbContext _dbContext
+@rendermode InteractiveServer
+
+<PageTitle>Order a Service</PageTitle>
+
+@if (supplier == null)
+{
+    <div class="alert alert-danger">
+        <strong>Supplier not found.</strong>
+    </div>
+}
+else
+{
+    <h3 class="text-center mt-4 mb-4">
+        Order Services from @supplier.SupplierName
+    </h3>
+
+
+    <EditForm Model="NewOrder" OnValidSubmit="PlaceOrder">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="container card">
+            <div class="row card-body d-flex align-items-stretch">
+                
+                <div class="col-md-6 mb-4 d-flex flex-column">
+                    <h4 class="text-center mb-4"><strong>Select Services:</strong></h4>
+                    @foreach (var service in supplier.Services)
+                    {
+                        <div class="form-check">
+                            <input id="@service.ServiceId" type="checkbox" class="form-check-input"
+                                checked="@IsChecked(service.ServiceId)"
+                                @onchange="@(() => ToggleService(service.ServiceId, service.ServicePrice))" />
+                            <label class="form-check-label" for="@service.ServiceId">@service.ServiceName -
+                                $@service.ServicePrice</label>
+                        </div>
+                    }
+
+                    <div class="mt-3 text-center">
+                        <h5><strong>Total Price: $@totalAmount</strong></h5>
+                    </div>
+                </div>
+
+                
+                <div class="col-md-6 mb-4 d-flex flex-column">
+                    <h4 class="text-center mb-4"><strong>Deliver to:</strong></h4>
+                    <div class="form-group">
+                        <label>Address Line 1:</label>
+                        <InputText @bind-Value="NewOrder!.OrderAddress1" class="form-control" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Address Line 2:</label>
+                        <InputText @bind-Value="NewOrder.OrderAddress2" class="form-control" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>City:</label>
+                        <InputText @bind-Value="NewOrder.OrderCity" class="form-control" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Zip Code:</label>
+                        <InputText @bind-Value="NewOrder.OrderZip" class="form-control" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Country:</label>
+                        <InputText @bind-Value="NewOrder.OrderCountry" class="form-control" required />
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-success btn-lg">Place Order</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </EditForm>
+
+}
+
+@code {
+    [Parameter] public int supplierId { get; set; }
+    [Parameter] public int userId { get; set; }
+
+    private Supplier? supplier;
+    private User? user;
+    private NewOrder? NewOrder { get; set; }
+    private HashSet<int> selectedServices = new();
+    private decimal totalAmount = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch the supplier data
+        supplier = await _dbContext.Suppliers
+            .Include(s => s.Services)
+            .FirstOrDefaultAsync(s => s.SupplierId == supplierId);
+
+        // initialize the current order with default values
+        if (supplier != null)
+        {
+            NewOrder = new NewOrder
+            {
+                SupplierId = supplier.SupplierId,
+                UserId = userId,
+                OrderAmount = totalAmount,
+                OrderAddress1 = string.Empty,
+                OrderCity = string.Empty,
+                OrderZip = string.Empty,
+                OrderCountry = string.Empty,
+                OrderDate = DateTime.UtcNow,
+                OrderStatus = 1
+            };
+        }
+    }
+
+    private bool IsChecked(int serviceId) => selectedServices.Contains(serviceId);
+
+    private void ToggleService(int serviceId, decimal servicePrice)
+    {
+        if (selectedServices.Contains(serviceId))
+        {
+            selectedServices.Remove(serviceId);
+            totalAmount -= servicePrice;
+        }
+        else
+        {
+            selectedServices.Add(serviceId);
+            totalAmount += servicePrice;
+        }
+
+        // update the amount in the new order to reflect the totalAmount
+        if (NewOrder != null)
+        {
+            NewOrder.OrderAmount = totalAmount;
+        }
+    }
+
+    private async Task PlaceOrder()
+    {
+        // ensure that we have valid data
+        if (NewOrder == null || selectedServices.Count == 0)
+        {
+            return;
+        }
+
+        // add the order to the DB
+        _dbContext.NewOrder.Add(NewOrder);
+        
+        try
+        {
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex)
+        {
+            var innerException = ex.InnerException?.Message ?? "No inner exception.";
+            Console.WriteLine($"Error while saving order: {innerException}");
+            throw;
+        }
+
+        // redirect after placing order
+        Navigation.NavigateTo($"/order-success/{NewOrder.OrderId}");
+    }
+}

@@ -1,5 +1,6 @@
 @inject NavigationManager NavManager
 @inject IJSRuntime JSRuntime
+@using System.Globalization
 
 
 <div class="top-nav background-image-container">
@@ -23,17 +24,30 @@
         var uri = NavManager.Uri;
         var path = new Uri(uri).AbsolutePath.Trim('/');
 
-        // check if the current route is the home page
-        IsHomePage = string.IsNullOrEmpty(path); // home page if the path is empty
+        // Check if the current route is the home page
+        IsHomePage = string.IsNullOrEmpty(path); // Home page if the path is empty
 
         if (IsHomePage)
         {
             FormattedRoute = userName != null ? $"Welcome back, {userName}!" : "Welcome to ProSupply! Explore our supplies.";
         }
+        @* for the supplier pages *@
+        else if (path.StartsWith("suppliers/"))
+        {
+            var supplierSlug = path.Replace("suppliers/", "").Replace("-", " ");
+
+            FormattedRoute = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(supplierSlug);
+        }
+        else if (path.StartsWith("order"))
+        {
+            FormattedRoute = "Order";
+        }
         else
         {
+            // Generic formatting for other pages
             var formattedPath = path.Replace("-", " ");
             FormattedRoute = char.ToUpper(formattedPath[0]) + formattedPath.Substring(1);
         }
     }
+
 }
