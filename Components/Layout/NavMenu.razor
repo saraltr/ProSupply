@@ -1,4 +1,7 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using CSE_325_group_project.Data;
+@inject OrderService OrderService
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">
             <h1><span class="pro">Pro</span><span class="supply">Supply</span></h1>
@@ -20,7 +23,10 @@
             <NavLink class="nav-link d-flex align-items-center" href="profile">
                 <span class="bi bi-person-fill" aria-hidden="true"></span>
                 <span class="nav-text">Profile</span>
-                <span class="badge">3</span>
+                @if (OrderService.OrderCount > 0)
+                {
+                    <span class="badge">@OrderService.OrderCount</span>
+                }
             </NavLink>
         </div>
 
@@ -43,3 +49,18 @@
         </div>
     </nav>
 </div>
+
+@code {
+    private int userId = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await OrderService.LoadOrderCount(userId);
+        OrderService.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        OrderService.OnChange -= StateHasChanged;
+    }
+}

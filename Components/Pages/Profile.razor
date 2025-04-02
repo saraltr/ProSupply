@@ -1,5 +1,7 @@
 @page "/profile"
 
+<PageTitle>Profile</PageTitle>
+
 <section>
     <div class="description-text">
         <p>If you are a manager, you can:</p>
@@ -18,6 +20,11 @@
     <NavLink href="create-supplier" force-load="true">
         <button class="btn-primary">
             <span class="bi bi-plus-circle"> &nbsp;New Supplier</span>
+        </button>
+    </NavLink>
+    <NavLink href="@($"/history")"> 
+        <button class="btn-primary">
+            <span class="bi bi-clock-history"> &nbsp;View Your Order History</span>
         </button>
     </NavLink>
 </section>

@@ -1,0 +1,59 @@
+@page "/history"
+@using CSE_325_group_project.Models
+@using CSE_325_group_project.Data
+@using Microsoft.EntityFrameworkCore
+@inject AppDbContext _dbContext
+@inject NavigationManager Navigation
+
+<PageTitle>Order History</PageTitle>
+
+<div class="container mt-5">
+    <h3 class="text-center mb-4">Your Order History</h3>
+
+    @if (userOrders == null || !userOrders.Any())
+    {
+        <div class="alert alert-info text-center">
+            <strong>You have no order history. Please place an order first.</strong>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var userOrder in userOrders)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Order #@userOrder.OrderId</h5>
+                            <p><strong>Order Date:</strong> @userOrder.OrderDate.ToString("MMMM dd, yyyy")</p>
+                            <p><strong>Total Amount:</strong> $@userOrder.OrderAmount.ToString("F2")</p>
+                            <p><strong>Shipping Address:</strong> @userOrder.OrderAddress1, @userOrder.OrderCity,
+                                @userOrder.OrderCountry</p>
+
+                            <NavLink href="@($"/order-success/{userOrder.OrderId}")" class="btn btn-primary w-100">
+                                <span class="bi bi-clock-history"></span> View Order Details
+                            </NavLink>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<NewOrder>? userOrders;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // get the currently logged in user's id, we have to replace this with actual logic
+        var currentUserId = 1; 
+
+        // fetch all orders for the user
+        userOrders = await _dbContext.NewOrder
+        .Where(o => o.UserId == currentUserId) // filter orders by the current user id
+        .Include(o => o.Supplier)
+        .OrderByDescending(o => o.OrderId) // sort by id
+        .ToListAsync();
+    }
+}

@@ -1,12 +1,11 @@
-html, body {
+html, body, h2, h3, h4 {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-h1,
-h2,
-h3 {
+h1
+{
     font-family: 'Playfair Display', serif;
-        font-weight: bold;
+    font-weight: bold;
 }
 
 a, .btn-link {

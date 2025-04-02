@@ -1,0 +1,43 @@
+@page "/suppliers"
+
+@using Microsoft.EntityFrameworkCore
+@using CSE_325_group_project.Models;
+@using CSE_325_group_project.Data;
+@inject AppDbContext _dbContext
+@inject NavigationManager Navigation
+
+<PageTitle>Suppliers</PageTitle>
+
+<h3>Suppliers List</h3>
+
+@if (suppliers == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <ul>
+        @foreach (var s in suppliers)
+        {
+            <li>
+                <NavLink href="@($"/suppliers/{GenerateSlug(s.SupplierName)}")">@s.SupplierName</NavLink>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    private List<Supplier> suppliers = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        suppliers = await _dbContext.Suppliers
+        .AsNoTracking()
+        .ToListAsync();
+    }
+
+    private string GenerateSlug(string name)
+    {
+        return name.ToLower().Replace(" ", "-");
+    }
+}
