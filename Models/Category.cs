@@ -19,5 +19,22 @@ public class Category
     [Required, StringLength(45)]
     [Column("category_description")]
         public required string Category_description {get; set;}
-}
+
+    // constructor
+    public Category(
+        int categoryId,
+        string categoryName,
+        string categoryDescription
+    )
+    {
+        Category_id = categoryId;
+        Category_name = categoryName;
+        Category_description = categoryDescription;
+    }
+
+    // parameterless constructor for EF Core
+
+    public Category (){}
+
+    }
 }

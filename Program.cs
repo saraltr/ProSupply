@@ -3,22 +3,29 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using dotenv.net;
 using CSE_325_group_project.Data;
+using CSE_325_group_project.Models;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
-builder.Services.AddHttpClient();
-
-// load .env file
+// Load environment variables from .env file
 DotEnv.Load();
 
 var connectionString = Environment.GetEnvironmentVariable("POSTGRES_CONNECTION");
 
-// register dbContext
+// register DbContext with Scoped lifetime - recommended for EF Core
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
+
+// register services
+builder.Services.AddScoped<OrderService>();
+
+// add Razor Components
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
+
+builder.Services.AddHttpClient();
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 

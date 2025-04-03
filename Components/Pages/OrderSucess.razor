@@ -1,0 +1,150 @@
+@page "/order-success/{orderId:int}"
+@using CSE_325_group_project.Models
+@using CSE_325_group_project.Data
+@using Microsoft.EntityFrameworkCore
+@inject AppDbContext _dbContext
+@inject NavigationManager Navigation
+
+<PageTitle>Order Success</PageTitle>
+
+<div class="container mt-5">
+    <div class="text-center">
+        <h2 class="text-success">
+            <i class="bi bi-check-circle-fill"></i> Order Placed Successfully!
+        </h2>
+        <p class="text-muted">Thank you for your order!</p>
+    </div>
+
+    @if (order == null)
+    {
+        <div class="alert alert-danger text-center">
+            <strong>Order not found. Please try again later.</strong>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-lg p-4 mt-4">
+            <h4 class="text-center mb-4">Order Details</h4>
+
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <th>Order ID:</th>
+                        <td>#@order.OrderId</td>
+                    </tr>
+                    <tr>
+                        <th>Amount:</th>
+                        <td><strong>$@order.OrderAmount.ToString("F2")</strong></td>
+                    </tr>
+                    <tr>
+                        <th>Order Date:</th>
+                        <td>@order.OrderDate.ToString("MMMM dd, yyyy")</td>
+                    </tr>
+                    <tr>
+                        <th>Status:</th>
+                        <td>
+                            <p>
+                                <strong>Status:</strong> 
+                                <span
+                                    class="badge @GetStatusClass(order.OrderStatus)">@GetOrderStatusText(order.OrderStatus)</span></p>
+                            </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="container">
+                <div class="row justify-content-center">
+                    @* customer details *@
+                    <div class="col-md-5 mb-4">
+                        <h5 class="mt-4"><i class="bi bi-person-fill"></i> Customer Details</h5>
+                        <p><strong>@order.User.UserName @order.User.UserLastName</strong></p>
+                        <p><i class="bi bi-envelope-fill"></i> @order.User.UserEmail</p>
+                        <p><i class="bi bi-geo-alt-fill"></i> Shipping Address:</p>
+                        <p>@order.OrderAddress1</p>
+                        @if (!string.IsNullOrEmpty(order.OrderAddress2))
+                        {
+                            <p>@order.OrderAddress2</p>
+                        }
+                        <p>@order.OrderCity - @order.OrderZip, @order.OrderCountry</p>
+                    </div>
+
+                    @* supplier details *@
+                    <div class="col-md-5 mb-4">
+                        <h5 class="mt-4"><i class="bi bi-box-fill"></i> Supplier Details</h5>
+                        <p><strong>@order.Supplier.SupplierName</strong></p>
+                        <p><i class="bi bi-envelope-fill"></i> @order.Supplier.SupplierEmail</p>
+                        <p><i class="bi bi-telephone-fill"></i> @order.Supplier.SupplierPhone</p>
+                        <p><i class="bi bi-geo-alt-fill"></i> @order.Supplier.SupplierAddress</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            @if (userOrders != null && userOrders.Any())
+            {
+                <NavLink href="@($"/history")" class="btn btn-outline-primary">
+                    <i class="bi bi-clock-history"></i> View Your Order History
+                </NavLink>
+            }
+            else
+            {
+                <p class="text-muted">You have no previous orders.</p>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    
+    [Parameter] public int orderId { get; set; }
+
+    private NewOrder? order;
+    private List<NewOrder>? userOrders;
+
+    private string GetOrderStatusText(int status)
+    {
+        return status switch
+        {
+            1 => "Pending",
+            2 => "Approved",
+            3 => "Shipped",
+            4 => "Completed",
+            5 => "Canceled",
+            _ => "Unknown"
+        };
+    }
+
+    private string GetStatusClass(int status)
+    {
+        return status switch
+        {
+            @* using bootstrap classes for styling *@
+            1 => "bg-warning text-dark", // pending yellow
+            2 => "bg-primary", // approved blue
+            3 => "bg-info text-dark", // shipped light blue
+            4 => "bg-success", // completed green
+            5 => "bg-danger", // canceled red
+            _ => "bg-secondary" // unknown gray
+        };
+    }
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        order = await _dbContext.NewOrder
+        .Include(o => o.Supplier)
+        .Include(o => o.User)
+        .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+        if (order != null)
+        {
+            // fetch all previous orders from the same user
+            userOrders = await _dbContext.NewOrder
+            .Where(o => o.UserId == order.UserId)
+            .OrderByDescending(o => o.OrderDate)
+            .ToListAsync();
+        }
+    }
+}
