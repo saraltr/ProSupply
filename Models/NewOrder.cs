@@ -43,6 +43,10 @@ namespace CSE_325_group_project.Models
         [Column("order_country")]
         public string OrderCountry { get; set; }
 
+        [StringLength(250)]
+        [Column("order_notes")]
+        public string? OrderNotes { get; set; }
+
         [Required]
         [Column("order_status")]
         public int OrderStatus { get; set; }
@@ -73,6 +77,7 @@ namespace CSE_325_group_project.Models
            string orderZip,
            string orderCountry,
            int orderStatus,
+           string? orderNotes = null,
            string? orderAddress2 = null,
            DateTime orderDate = default
        )
@@ -86,6 +91,7 @@ namespace CSE_325_group_project.Models
             OrderCity = orderCity;
             OrderZip = orderZip;
             OrderCountry = orderCountry;
+            OrderNotes = orderNotes;
             OrderDate = orderDate == default ? DateTime.UtcNow : orderDate;
             OrderStatus = orderStatus;
         }

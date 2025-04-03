@@ -9,21 +9,56 @@
 
 <div class="container mt-5">
     <div class="text-center">
-        <h2 class="text-success">
-            <i class="bi bi-check-circle-fill"></i> Order Placed Successfully!
-        </h2>
-        <p class="text-muted">Thank you for your order!</p>
+        @if (order == null)
+        {
+            <div class="alert alert-danger text-center">
+                <strong>Order not found. Please try again later.</strong>
+            </div>
+        }
+        else
+        {
+            @* Dynamically update message based on Order Status *@
+            @if (order.OrderStatus == 1)
+            {
+                <h2 class="text-warning">
+                    <i class="bi bi-clock-history"></i> Order Pending
+                </h2>
+                <p class="text-muted">Your order is currently pending. Please wait for approval.</p>
+            }
+            else if (order.OrderStatus == 2)
+            {
+                <h2 class="text-primary">
+                    <i class="bi bi-gear"></i> Order Approved
+                </h2>
+                <p class="text-muted">Your order has been approved and is being processed.</p>
+            }
+            else if (order.OrderStatus == 3)
+            {
+                <h2 class="text-info">
+                    <i class="bi bi-truck"></i> Order Shipped
+                </h2>
+                <p class="text-muted">Your order has been shipped and is on its way!</p>
+            }
+            else if (order.OrderStatus == 4)
+            {
+                <h2 class="text-success">
+                    <i class="bi bi-check-circle-fill"></i> Order Completed
+                </h2>
+                <p class="text-muted">Thank you! Your order has been completed successfully.</p>
+            }
+            else if (order.OrderStatus == 5)
+            {
+                <h2 class="text-danger">
+                    <i class="bi bi-x-circle-fill"></i> Order Canceled
+                </h2>
+                <p class="text-muted">Unfortunately, your order has been canceled. Please contact support for more details.</p>
+            }
+        }
     </div>
 
-    @if (order == null)
+    @if (order != null)
     {
-        <div class="alert alert-danger text-center">
-            <strong>Order not found. Please try again later.</strong>
-        </div>
-    }
-    else
-    {
-        <div class="card shadow-lg p-4 mt-4">
+        <div class="card shadow-sm p-4 mt-4">
             <h4 class="text-center mb-4">Order Details</h4>
 
             <table class="table table-bordered">
@@ -41,25 +76,30 @@
                         <td>@order.OrderDate.ToString("MMMM dd, yyyy")</td>
                     </tr>
                     <tr>
+                        <th>Order Notes:</th>
+                        <td>@order.OrderNotes</td>
+                    </tr>
+                    <tr>
                         <th>Status:</th>
                         <td>
                             <p>
-                                <strong>Status:</strong> 
+                                <strong>Status:</strong>
                                 <span
-                                    class="badge @GetStatusClass(order.OrderStatus)">@GetOrderStatusText(order.OrderStatus)</span></p>
-                            </td>
+                                    class="badge @GetStatusClass(order.OrderStatus)">@GetOrderStatusText(order.OrderStatus)</span>
+                            </p>
+                        </td>
                     </tr>
                 </tbody>
             </table>
 
             <div class="container">
                 <div class="row justify-content-center">
-                    @* customer details *@
-                    <div class="col-md-5 mb-4">
+                    @* Customer Details *@
+                    <div class="col">
                         <h5 class="mt-4"><i class="bi bi-person-fill"></i> Customer Details</h5>
                         <p><strong>@order.User.UserName @order.User.UserLastName</strong></p>
                         <p><i class="bi bi-envelope-fill"></i> @order.User.UserEmail</p>
-                        <p><i class="bi bi-geo-alt-fill"></i> Shipping Address:</p>
+                        <p><i class="bi bi-geo-alt-fill"></i> <strong>Shipping Address:</strong></p>
                         <p>@order.OrderAddress1</p>
                         @if (!string.IsNullOrEmpty(order.OrderAddress2))
                         {
@@ -68,8 +108,8 @@
                         <p>@order.OrderCity - @order.OrderZip, @order.OrderCountry</p>
                     </div>
 
-                    @* supplier details *@
-                    <div class="col-md-5 mb-4">
+                    @* Supplier Details *@
+                    <div class="col">
                         <h5 class="mt-4"><i class="bi bi-box-fill"></i> Supplier Details</h5>
                         <p><strong>@order.Supplier.SupplierName</strong></p>
                         <p><i class="bi bi-envelope-fill"></i> @order.Supplier.SupplierEmail</p>
@@ -78,9 +118,18 @@
                     </div>
                 </div>
             </div>
+
+            @if (order.OrderStatus == 1 || order.OrderStatus == 2)
+            {
+                <div class="text-center mt-4">
+                    <NavLink class="btn btn-warning" href="@($"/edit-order/{order?.OrderId}")">
+                        <i class="bi bi-pencil-square"></i> Modify Order
+                    </NavLink>
+                </div>
+            }
         </div>
 
-        <div class="text-center mt-4">
+        <div class="text-center m-4">
             @if (userOrders != null && userOrders.Any())
             {
                 <NavLink href="@($"/history")" class="btn btn-outline-primary">
@@ -96,7 +145,6 @@
 </div>
 
 @code {
-    
     [Parameter] public int orderId { get; set; }
 
     private NewOrder? order;
@@ -119,7 +167,6 @@
     {
         return status switch
         {
-            @* using bootstrap classes for styling *@
             1 => "bg-warning text-dark", // pending yellow
             2 => "bg-primary", // approved blue
             3 => "bg-info text-dark", // shipped light blue
@@ -128,8 +175,6 @@
             _ => "bg-secondary" // unknown gray
         };
     }
-
-
 
     protected override async Task OnInitializedAsync()
     {

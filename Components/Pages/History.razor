@@ -4,56 +4,216 @@
 @using Microsoft.EntityFrameworkCore
 @inject AppDbContext _dbContext
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
+@using Microsoft.AspNetCore.Components
 
 <PageTitle>Order History</PageTitle>
 
 <div class="container mt-5">
     <h3 class="text-center mb-4">Your Order History</h3>
 
-    @if (userOrders == null || !userOrders.Any())
+    @if (Navigation.Uri.Contains("deleted=true"))
+    {
+        <p class="alert alert-success">Your order has been deleted successfully.</p>
+    }
+
+    @if ((userOrders == null || !userOrders.Any()) && (userQuotes == null || !userQuotes.Any()))
     {
         <div class="alert alert-info text-center">
-            <strong>You have no order history. Please place an order first.</strong>
+            <strong>You have no order or quote history. Please place an order or request a quote first.</strong>
         </div>
     }
     else
     {
-        <div class="row">
-            @foreach (var userOrder in userOrders)
-            {
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Order #@userOrder.OrderId</h5>
-                            <p><strong>Order Date:</strong> @userOrder.OrderDate.ToString("MMMM dd, yyyy")</p>
-                            <p><strong>Total Amount:</strong> $@userOrder.OrderAmount.ToString("F2")</p>
-                            <p><strong>Shipping Address:</strong> @userOrder.OrderAddress1, @userOrder.OrderCity,
-                                @userOrder.OrderCountry</p>
+        @* Active Orders Section *@
+        @if (presentOrders != null && presentOrders.Any())
+        {
+            <h4>Active Orders</h4>
+            <div class="row">
+                @foreach (var userOrder in presentOrders)
+                {
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Order #@userOrder.OrderId</h5>
+                                <p><strong>Order Date:</strong> @userOrder.OrderDate.ToString("MMMM dd, yyyy")</p>
+                                <p><strong>Total Amount:</strong> $@userOrder.OrderAmount.ToString("F2")</p>
+                                <p><strong>Shipping Address:</strong> @userOrder.OrderAddress1,
+                                    @userOrder.OrderCity,@userOrder.OrderCountry</p>
 
-                            <NavLink href="@($"/order-success/{userOrder.OrderId}")" class="btn btn-primary w-100">
-                                <span class="bi bi-clock-history"></span> View Order Details
-                            </NavLink>
+                                <p><strong>Status:</strong>
+                                    <span class="badge @GetStatusClass(userOrder.OrderStatus)">
+                                        @GetOrderStatusText(userOrder.OrderStatus)
+                                    </span>
+                                </p>
+
+                                <NavLink href="@($"/order-success/{userOrder.OrderId}")" class="btn btn-primary w-100">
+                                    <span class="bi bi-clock-history"></span> View Order Details
+                                </NavLink>
+                            </div>
                         </div>
                     </div>
-                </div>
-            }
-        </div>
+                }
+            </div>
+        }
+
+        @* Active Quotes Section *@
+        @if (presentQuotes != null && presentQuotes.Any())
+        {
+            <h4 class="mt-5">Active Quotes</h4>
+            <div class="row">
+                @foreach (var quote in presentQuotes)
+                {
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Quote #@quote.QuoteId</h5>
+                                <p><strong>Quote Date:</strong> @quote.QuoteDate.ToString("MMMM dd, yyyy")</p>
+                                <p><strong>Details:</strong> @quote.QuoteDetails</p>
+                                <p><strong>Status:</strong>
+                                    <span class="badge @GetStatusClass(quote.QuoteStatus)">
+                                        @GetOrderStatusText(quote.QuoteStatus)
+                                    </span>
+                                </p>
+
+                                <NavLink href="@($"/quote-success/{quote.QuoteId}")" class="btn btn-primary w-100">
+                                    <span class="bi bi-chat-left-text"></span> View Quote Details
+                                </NavLink>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        @* Canceled or Completed Orders Section *@
+        @if (oldOrders != null && oldOrders.Any())
+        {
+            <h4 class="mt-5">Canceled or Completed Orders</h4>
+            <div class="row">
+                @foreach (var userOrder in oldOrders)
+                {
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Order #@userOrder.OrderId</h5>
+                                <p><strong>Order Date:</strong> @userOrder.OrderDate.ToString("MMMM dd, yyyy")</p>
+                                <p><strong>Total Amount:</strong> $@userOrder.OrderAmount.ToString("F2")</p>
+                                <p><strong>Shipping Address:</strong> @userOrder.OrderAddress1, @userOrder.OrderCity,
+                                    @userOrder.OrderCountry</p>
+                                <p><strong>Status:</strong>
+                                    <span class="badge @GetStatusClass(userOrder.OrderStatus)">
+                                        @GetOrderStatusText(userOrder.OrderStatus)
+                                    </span>
+                                </p>
+
+                                <NavLink href="@($"/order-success/{userOrder.OrderId}")" class="btn btn-primary w-100">
+                                    <span class="bi bi-clock-history"></span> View Order Details
+                                </NavLink>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        @* Closed or Expired Quotes Section *@
+        @if (oldQuotes != null && oldQuotes.Any())
+        {
+            <h4 class="mt-5">Closed or Expired Quotes</h4>
+            <div class="row">
+                @foreach (var quote in oldQuotes)
+                {
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Quote #@quote.QuoteId</h5>
+                                <p><strong>Quote Date:</strong> @quote.QuoteDate.ToString("MMMM dd, yyyy")</p>
+                                <p><strong>Details:</strong> @quote.QuoteDetails</p>
+                                <p><strong>Notes:</strong> @quote.QuoteNotes</p>
+                                <p><strong>Status:</strong>
+                                    <span class="badge @GetStatusClass(quote.QuoteStatus)">
+                                        @GetOrderStatusText(quote.QuoteStatus)
+                                    </span>
+                                </p>
+
+                                <NavLink href="@($"/quote-success/{quote.QuoteId}")" class="btn btn-primary w-100">
+                                    <span class="bi bi-chat-left-text"></span> View Quote Details
+                                </NavLink>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
     }
 </div>
 
 @code {
     private List<NewOrder>? userOrders;
+    private List<NewOrder>? presentOrders;
+    private List<NewOrder>? oldOrders;
+
+    private List<Quote>? userQuotes;
+    private List<Quote>? presentQuotes;
+    private List<Quote>? oldQuotes;
 
     protected override async Task OnInitializedAsync()
     {
-        // get the currently logged in user's id, we have to replace this with actual logic
-        var currentUserId = 1; 
+        var currentUserId = 1; // Example current user id. Replace with actual logic
 
-        // fetch all orders for the user
+        // Fetch orders for the user
         userOrders = await _dbContext.NewOrder
-        .Where(o => o.UserId == currentUserId) // filter orders by the current user id
+        .Where(o => o.UserId == currentUserId)
         .Include(o => o.Supplier)
-        .OrderByDescending(o => o.OrderId) // sort by id
+        .OrderByDescending(o => o.OrderId)
         .ToListAsync();
+
+        // Fetch quotes for the user
+        userQuotes = await _dbContext.Quotes
+        .Where(q => q.UserId == currentUserId)
+        .Include(q => q.Supplier)
+        .OrderByDescending(q => q.QuoteId)
+        .ToListAsync();
+
+        // Separate orders into active and old
+        if (userOrders != null)
+        {
+            presentOrders = userOrders.Where(o => o.OrderStatus == 1 || o.OrderStatus == 2 || o.OrderStatus == 3).ToList();
+            oldOrders = userOrders.Where(o => o.OrderStatus == 4 || o.OrderStatus == 5).ToList();
+        }
+
+        // Separate quotes into active and old
+        if (userQuotes != null)
+        {
+            presentQuotes = userQuotes.Where(q => q.QuoteStatus == 1 || q.QuoteStatus == 2 || q.QuoteStatus == 3).ToList();
+            oldQuotes = userQuotes.Where(q => q.QuoteStatus == 4 || q.QuoteStatus == 5).ToList();
+        }
+    }
+
+    private string GetOrderStatusText(int status)
+    {
+        return status switch
+        {
+            1 => "Pending",
+            2 => "Approved",
+            3 => "Shipped",
+            4 => "Completed",
+            5 => "Canceled",
+            _ => "Unknown"
+        };
+    }
+
+    private string GetStatusClass(int status)
+    {
+        return status switch
+        {
+            1 => "bg-warning text-dark", // Pending
+            2 => "bg-primary", // Approved
+            3 => "bg-info text-dark", // Shipped
+            4 => "bg-success", // Completed
+            5 => "bg-danger", // Canceled
+            _ => "bg-secondary" // Unknown
+        };
     }
 }
