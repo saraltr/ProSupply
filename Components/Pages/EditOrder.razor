@@ -1,0 +1,126 @@
+@page "/edit-order/{orderId:int}"
+@using CSE_325_group_project.Models
+@using CSE_325_group_project.Data
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.Forms
+@inject AppDbContext _dbContext
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@rendermode RenderMode.InteractiveServer
+
+<PageTitle>Edit Your Order</PageTitle>
+
+<h3>Edit Order</h3>
+
+@if (order == null)
+{
+    <p>Order not found.</p>
+}
+else
+{
+    @if (isSuccess)
+    {
+        <div class="alert alert-success mt-3">
+            <strong>Success!</strong> Your order has been updated successfully.
+        </div>
+    }
+    <EditForm Model="order" OnValidSubmit="SaveChanges" FormName="EditForm">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        
+        <div class="mb-3">
+            <label for="address1"><strong>Shipping Address Line 1</strong></label>
+            <InputText id="address1" class="form-control" @bind-Value="order.OrderAddress1" />
+        </div>
+
+        <div class="mb-3">
+            <label for="address2"><strong>Shipping Address Line 2</strong></label>
+            <InputText id="address2" class="form-control" @bind-Value="order.OrderAddress2" />
+        </div>
+
+        <div class="mb-3">
+            <label for="city"><strong>City</strong></label>
+            <InputText  id="city" class="form-control" @bind-Value="order.OrderCity"  />
+        </div>
+
+        <div class="mb-3">
+            <label for="zip"><strong>Zip Code</strong></label>
+            <InputText id="zip" class="form-control" @bind-Value="order.OrderZip" />
+        </div>
+
+        <div class="mb-3">
+            <label for="notes"><strong>Order Specifications</strong></label>
+            <InputText id="notes" class="form-control" rows="3" placeholder="Type your instructions here..."
+            @bind-Value="order.OrderNotes" />
+        </div>
+
+        <button type="submit" class="btn btn-success">Save Changes</button>
+        <button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancel Modifications</button>
+        <button type="button" class="btn btn-danger" @onclick="DeleteOrder"><i class="bi bi-trash"></i> Delete Order</button>
+    </EditForm>
+}
+
+@code {
+    @* gets the orderId from the url *@
+    [Parameter] public int orderId { get; set; }
+    private NewOrder? order;
+    private bool isSuccess = false;
+
+    @* this method runs when the component is initialized *@
+    @* it retrieves the order from the database based on the passed orderId *@
+    protected override async Task OnInitializedAsync()
+    {
+        order = await _dbContext.NewOrder.FindAsync(orderId);
+
+        @* if the order is found, mark the entry as modified to track changes *@
+        if (order != null)
+        {
+            _dbContext.Entry(order).State = EntityState.Modified;
+        }
+        @* Console.WriteLine($"Entity State on load: {_dbContext.Entry(order).State}"); *@
+    }
+
+    @* this method is called when the form is submitted to save the changes *@
+    private async Task SaveChanges()
+    {
+        if (order != null)
+        {
+            @* ensure the date is still passed as UTC *@
+            @* postgreSQL expects DateTime with DateTimeKind.Utc *@
+            if (order.OrderDate.Kind == DateTimeKind.Unspecified)
+            {
+                order.OrderDate = DateTime.SpecifyKind(order.OrderDate, DateTimeKind.Utc);
+            }
+
+            @* Console.WriteLine($"OrderCity before SaveChanges: {order.OrderCity}"); *@
+
+            @* apply the changes to the db *@
+            _dbContext.NewOrder.Update(order);
+            @* _dbContext.Entry(order).State = EntityState.Modified; *@
+            await _dbContext.SaveChangesAsync();
+
+
+            isSuccess = true;
+
+            @* re-render the component *@
+            StateHasChanged();
+        }
+    }
+
+    private void CancelEdit()
+    {
+        Navigation.NavigateTo($"/history");
+    }
+
+    private async void DeleteOrder()
+    {   
+        var confirmDelete = await JS.InvokeAsync<bool>("confirm", "Are you sure you want to delete this order?");
+            if (confirmDelete) {
+                order.OrderStatus = 5;
+                order.OrderDate = DateTime.SpecifyKind(order.OrderDate, DateTimeKind.Utc);
+                _dbContext.NewOrder.Update(order);
+                await _dbContext.SaveChangesAsync();
+                Navigation.NavigateTo("/history?deleted=true");
+            }
+    }
+}

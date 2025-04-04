@@ -13,6 +13,7 @@ public class AppDbContext : DbContext
     public DbSet<NewOrder> NewOrder { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Service> Services { get; set; }
+    public DbSet<Quote> Quotes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -75,6 +76,7 @@ public class AppDbContext : DbContext
                 entity.Property(o => o.OrderCountry)
                     .IsRequired()
                     .HasMaxLength(50);
+                entity.Property(o => o.OrderNotes).HasMaxLength(250);
                 entity.Property(o => o.SupplierId).IsRequired();
                 entity.Property(o => o.UserId).IsRequired();
                 entity.HasOne(o => o.Supplier)
@@ -114,6 +116,29 @@ public class AppDbContext : DbContext
                       .WithMany(s => s.Services)
                       .HasForeignKey(s => s.SupplierId)
                       .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<Quote>( entity => 
+            {
+                entity.ToTable("quote");
+                entity.HasKey(q => q.QuoteId);
+
+                entity.Property(q => q.QuoteDate).IsRequired();
+                entity.Property(q => q.QuoteDetails).IsRequired().HasMaxLength(300);
+                entity.Property(q => q.QuotePrice).HasColumnType("decimal(10,2)");
+                entity.Property(q => q.QuoteStatus).HasConversion<int>();
+                entity.Property(q => q.QuoteNotes).HasMaxLength(250);
+
+                entity.HasOne(q => q.User)
+                .WithMany()
+                .HasForeignKey(q => q.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(q => q.Supplier)
+                .WithMany()
+                .HasForeignKey(q => q.SupplierId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             });
         }
     }

@@ -1,0 +1,189 @@
+@page "/quote-success/{quoteId:int}"
+@using Microsoft.AspNetCore.Components.Forms
+@using CSE_325_group_project.Models;
+@using CSE_325_group_project.Data;
+@using Microsoft.EntityFrameworkCore
+@inject NavigationManager Navigation
+@inject HttpClient HttpClient
+@inject AppDbContext _dbContext
+@rendermode InteractiveServer
+
+<PageTitle>Quote Created!</PageTitle>
+
+<div class="container mt-5">
+    <div class="text-center">
+        @if (quote == null)
+        {
+            <div class="alert alert-danger text-center">
+                <strong>quote not found. Please try again later.</strong>
+            </div>
+        }
+        else
+        {
+            @* Dynamically update message based on quote Status *@
+            @if (quote.QuoteStatus == 1)
+            {
+                <h2 class="text-warning">
+                    <i class="bi bi-clock-history"></i> Quote Pending
+                </h2>
+                <p class="text-muted">Your quote is currently pending. Please wait for approval.</p>
+            }
+            else if (quote.QuoteStatus == 2)
+            {
+                <h2 class="text-primary">
+                    <i class="bi bi-gear"></i> quote Approved
+                </h2>
+                <p class="text-muted">Your quote has been approved and is being processed.</p>
+            }
+            else if (quote.QuoteStatus == 3)
+            {
+                <h2 class="text-info">
+                    <i class="bi bi-truck"></i> Quote Shipped
+                </h2>
+                <p class="text-muted">Your quote has been shipped and is on its way!</p>
+            }
+            else if (quote.QuoteStatus == 4)
+            {
+                <h2 class="text-success">
+                    <i class="bi bi-check-circle-fill"></i> Quote Completed
+                </h2>
+                <p class="text-muted">Thank you! Your quote has been completed successfully.</p>
+            }
+            else if (quote.QuoteStatus == 5)
+            {
+                <h2 class="text-danger">
+                    <i class="bi bi-x-circle-fill"></i> Quote Canceled
+                </h2>
+                <p class="text-muted">Unfortunately, your quote has been canceled. Please contact support for more details.</p>
+            }
+        }
+    </div>
+
+    @if (quote != null)
+    {
+        <div class="card shadow-sm p-4 mt-4">
+            <h4 class="text-center mb-4">quote Details</h4>
+
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <th>quote ID:</th>
+                        <td>#@quote.QuoteId</td>
+                    </tr>
+                    <tr>
+                        <th>quote Date:</th>
+                        <td>@quote.QuoteDate.ToString("MMMM dd, yyyy")</td>
+                    </tr>
+                    <tr>
+                        <th>quote Notes:</th>
+                        <td>@quote.QuoteNotes</td>
+                    </tr>
+                    <tr>
+                        <th>Status:</th>
+                        <td>
+                            <p>
+                                <strong>Status:</strong>
+                                <span
+                                    class="badge @GetStatusClass(quote.QuoteStatus)">@GetquoteStatusText(quote.QuoteStatus)</span>
+                            </p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="container">
+                <div class="row justify-content-center">
+                    @* Customer Details *@
+                    <div class="col">
+                        <h5 class="mt-4"><i class="bi bi-person-fill"></i> Customer Details</h5>
+                        <p><strong>@quote.User.UserName @quote.User.UserLastName</strong></p>
+                        <p><i class="bi bi-envelope-fill"></i> @quote.User.UserEmail</p>
+                        <p><i class="bi bi-geo-alt-fill"></i> <strong>Shipping Address:</strong></p>
+                    </div>
+
+                    @* Supplier Details *@
+                    <div class="col">
+                        <h5 class="mt-4"><i class="bi bi-box-fill"></i> Supplier Details</h5>
+                        <p><strong>@quote.Supplier.SupplierName</strong></p>
+                        <p><i class="bi bi-envelope-fill"></i> @quote.Supplier.SupplierEmail</p>
+                        <p><i class="bi bi-telephone-fill"></i> @quote.Supplier.SupplierPhone</p>
+                        <p><i class="bi bi-geo-alt-fill"></i> @quote.Supplier.SupplierAddress</p>
+                    </div>
+                </div>
+            </div>
+
+            @if (quote.QuoteStatus == 1 || quote.QuoteStatus == 2)
+            {
+                <div class="text-center mt-4">
+                    <NavLink class="btn btn-warning" href="@($"/edit-quote/{quote?.QuoteId}")">
+                        <i class="bi bi-pencil-square"></i> Modify quote
+                    </NavLink>
+                </div>
+            }
+        </div>
+
+        <div class="text-center m-4">
+            @if (userQuotes != null && userQuotes.Any())
+            {
+                <NavLink href="@($"/history")" class="btn btn-outline-primary">
+                    <i class="bi bi-clock-history"></i> View Your quote History
+                </NavLink>
+            }
+            else
+            {
+                <p class="text-muted">You have no previous quotes.</p>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    
+    [Parameter] public int quoteId { get; set; }
+
+    private Quote? quote;
+    private List<Quote>? userQuotes;
+
+    private string GetquoteStatusText(int status)
+    {
+        return status switch
+        {
+            1 => "Pending",
+            2 => "Approved",
+            3 => "Shipped",
+            4 => "Completed",
+            5 => "Canceled",
+            _ => "Unknown"
+        };
+    }
+
+    private string GetStatusClass(int status)
+    {
+        return status switch
+        {
+            1 => "bg-warning text-dark", // pending yellow
+            2 => "bg-primary", // approved blue
+            3 => "bg-info text-dark", // shipped light blue
+            4 => "bg-success", // completed green
+            5 => "bg-danger", // canceled red
+            _ => "bg-secondary" // unknown gray
+        };
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        quote = await _dbContext.Quotes
+        .Include(q => q.Supplier)
+        .Include(q => q.User)
+        .FirstOrDefaultAsync(o => o.QuoteId == quoteId);
+
+        if (quote != null)
+        {
+            // fetch all previous quotes from the same user
+            userQuotes = await _dbContext.Quotes
+            .Where(q => q.UserId == quote.UserId)
+            .OrderByDescending(q => q.QuoteDate)
+            .ToListAsync();
+        }
+    }
+}

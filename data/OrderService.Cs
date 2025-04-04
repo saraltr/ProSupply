@@ -27,10 +27,18 @@ public class OrderService
             // retrieve an instance of the AppDbContext from the scope (which represents the database context)
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-            // query the database asynchronously to count the number of orders that belong to the given user
-            _orderCount = await dbContext.NewOrder
-                .Where(o => o.UserId == userId) // filter orders by the user's ID
+            // count the active orders
+            var orderCount = await dbContext.NewOrder
+                .Where(o => o.UserId == userId && (o.OrderStatus == 1 || o.OrderStatus == 2 || o.OrderStatus == 3)) // filter active orders by status
                 .CountAsync();
+
+            // count the active quotes
+            var quoteCount = await dbContext.Quotes
+                .Where(q => q.UserId == userId && (q.QuoteStatus == 1 || q.QuoteStatus == 2 || q.QuoteStatus == 3)) // filter active quotes by status
+                .CountAsync();
+
+            // sum both order and quote counts
+            _orderCount = orderCount + quoteCount;
         }
 
 
