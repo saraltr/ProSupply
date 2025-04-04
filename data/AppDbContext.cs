@@ -1,11 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using CSE_325_group_project.Models;
+
 namespace CSE_325_group_project.Data
 {
+    public class AppDbContext : DbContext
+    {
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-public class AppDbContext : DbContext
-{
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
     public DbSet<Company> Companies { get; set; }
     public DbSet<Supplier> Suppliers { get; set; }
@@ -19,6 +20,7 @@ public class AppDbContext : DbContext
         {
             base.OnModelCreating(modelBuilder);
 
+            // Configure the Company entity
             modelBuilder.Entity<Company>(entity =>
             {
                 entity.ToTable("company");
@@ -32,7 +34,7 @@ public class AppDbContext : DbContext
                 entity.Property(c => c.User_id).IsRequired();
             });
 
-
+            // Configure the Supplier entity
             modelBuilder.Entity<Supplier>(entity =>
             {
                 entity.ToTable("supplier");
@@ -96,11 +98,11 @@ public class AppDbContext : DbContext
                 entity.HasKey(u => u.User_id);
 
                 entity.Property(u => u.Username).IsRequired().HasMaxLength(50);
-                entity.Property(u => u.UserName).IsRequired().HasMaxLength(50);
+                entity.Property(u => u.UserFname).IsRequired().HasMaxLength(50);
                 entity.Property(u => u.UserLastName).IsRequired().HasMaxLength(50);
                 entity.Property(u => u.UserEmail).IsRequired().HasMaxLength(100);
                 entity.Property(u => u.UserPassword).IsRequired();
-                entity.Property(u => u.UserLevel).IsRequired();
+                entity.Property(u => u.UserLevel).IsRequired().HasConversion<int>();
             });
 
             modelBuilder.Entity<Service>(entity =>
