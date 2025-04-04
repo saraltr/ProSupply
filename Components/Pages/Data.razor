@@ -5,6 +5,11 @@
 @inject AppDbContext _dbContext
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
+@inject IJSRuntime JS 
+@* gives opportunity to events being fired *@
+@rendermode InteractiveServer
+@inject HttpClient HttpClient
+
 
 
 
@@ -59,8 +64,9 @@
            // <li><strong>@company.company_name</strong> - @company.company_email <a href="/edit_company/@company.company_id">EDIT</a></li>
         <div class="company-card">
             <a href="/edit_company/@company.Company_id" class="edit-icon"><i class="fas fa-edit"></i></a>
-            <button class="btn btn-danger" @onclick="() => ShowDeleteConfirmation(company.Company_id)">
+            <button class="btn btn-danger" @onclick="() => ShowConfirmDialog(company.Company_id)">
                         <i class="fas fa-trash"></i></button>
+    
             <h2>@company.Company_name</h2>
             <p><strong>Phone:</strong> @company.Company_phone</p>
             <p><strong>Email:</strong> @company.Company_email</p>
@@ -71,10 +77,7 @@
         }
     </ul> 
 
-    <ConfirmationDialog IsVisible="@showConfirmationDialog"
-                   OnConfirm="DeleteCompany"
-                   OnCancel="CancelDelete"
-                   CloseDialog="CloseDialog" />
+    <ConfirmationDialog @ref="_confirmationDialog" OnConfirm="HandleConfirm" />
 
 @* <div class="companies-table-data">
     <table class="company-table">
@@ -118,8 +121,12 @@
     @* gets the companies list *@
     private List<Company> companies = new();
 
-    private bool showConfirmationDialog = false;
+    //private bool showConfirmationDialog = false;
     private int companyIdToDelete;
+
+    
+
+    private ConfirmationDialog _confirmationDialog;
 
     protected override async Task OnInitializedAsync()
     {
@@ -128,37 +135,47 @@
         .ToListAsync();
         companies = await _dbContext.Companies.ToListAsync();
     }
+  
      string GetIndustryName(int industryId)
         {
             string[] industryList = { "Technology", "Manufacturing", "Retail", "Healthcare", "Automotive", "Food & Beverage" };
             return industryId >= 1 && industryId <= industryList.Length ? industryList[industryId - 1] : "Unknown";
         }
 
-     
+    
+  
+  
 
-    private void ShowDeleteConfirmation(int companyId)
+    private void ShowConfirmDialog(int companyId)
     {
+       Console.WriteLine("I will open Confirm Window HEEELLLLOOOOO");
+        _confirmationDialog.Show();
         companyIdToDelete = companyId;
-        showConfirmationDialog = true;
     }
 
     private void CloseDialog()
     {
-        showConfirmationDialog = false;
+         _confirmationDialog.Hide();
     }
 
-    private void DeleteCompany()
+    private async void HandleConfirm(bool confirmed)
     {
         // Logic to delete the company from the database
         var companyToDelete = companies.FirstOrDefault(c => c.Company_id == companyIdToDelete);
-        if (companyToDelete != null)
+        
+         if (confirmed){
+            if (companyToDelete != null)
         {
-            companies.Remove(companyToDelete);
-            // Optionally call an API to delete it from the database
-            // DeleteCompanyFromDatabase(companyIdToDelete);
+            _dbContext.Companies.Remove(companyToDelete);
+            await _dbContext.SaveChangesAsync();
         }
+        }
+
         CloseDialog();
+        StateHasChanged();
     }
+
+ 
 
     private void CancelDelete()
     {
