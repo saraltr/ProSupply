@@ -30,6 +30,9 @@ public class Company
     [Column ("company_description")]
     public string? Company_description { get; set; } 
 
+    [Column ("img_url")]
+    public string? Img_url { get; set; } 
+
     [Required]
     [Column ("industry_id")]
     public int Industry_id { get; set; }
@@ -43,7 +46,8 @@ public class Company
             string companyName, 
             string companyPhone, 
             string companyEmail, 
-            string companyAddress, 
+            string companyAddress,
+            string imgUrl, 
             int industryId, 
             int userId, 
             string? companyDescription = null)
@@ -52,9 +56,11 @@ public class Company
         Company_phone = companyPhone;
         Company_email = companyEmail;
         Company_address = companyAddress;
+        Img_url = imgUrl;
         Industry_id = industryId;
         User_id = userId;
         Company_description = companyDescription;
+
     }
 
     // parameterless constructor for EF Core
