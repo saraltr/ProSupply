@@ -131,3 +131,46 @@ h1:focus {
 .edit-icon i {
     font-size: 20px;
 }
+
+
+/* HomePage.css */
+
+.hero-section {
+    background: linear-gradient(to right, #e0f2fe, #ffffff);
+    padding: 4rem 2rem;
+    border-radius: 1rem;
+}
+
+.hero-button {
+    background-color: #2563eb; /* Tailwind's blue-600 */
+    color: #ffffff;
+    padding: 0.75rem 1.5rem;
+    border-radius: 1.5rem;
+    transition: background-color 0.3s ease;
+    font-weight: 600;
+}
+
+.hero-button:hover {
+    background-color: #1d4ed8; /* Tailwind's blue-700 */
+}
+
+.feature-card {
+    background-color: #ffffff;
+    border-radius: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 1.5rem;
+    transition: box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+    box-shadow: 0 8px 12px rgba(0,0,0,0.2);
+}
+
+.feature-icon {
+    background-color: #f0f9ff;
+    padding: 1rem;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}

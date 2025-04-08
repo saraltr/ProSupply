@@ -1,3 +1,66 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<div class="p-8">
+    <!-- Hero Section -->
+    <div class="hero-section text-center mb-10">
+        <h1 class="text-4xl font-bold mb-4">Welcome to ProSupply</h1>
+        <p class="text-gray-600 text-lg">Your trusted platform for managing suppliers, companies, and data efficiently.</p>
+        <button class="hero-button mt-6">
+            <!-- Add navigation link here -->
+            Explore ProSupply
+        </button>
+    </div>
+
+    <!-- Feature Cards Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Suppliers Card -->
+        <div class="feature-card">
+            <div class="flex items-center justify-center mb-4">
+                <div class="feature-icon">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18m-6 5h6"></path>
+                    </svg>
+                </div>
+            </div>
+            <h2 class="text-xl font-semibold text-center mb-2">Suppliers</h2>
+            <p class="text-gray-500 text-center">Browse and manage a wide range of construction suppliers.</p>
+            <div class="text-center mt-4">
+                <a href="/suppliers" class="nav-link">View Suppliers</a>
+            </div>
+        </div>
+
+        <!-- Company Card -->
+        <div class="feature-card">
+            <div class="flex items-center justify-center mb-4">
+                <div class="feature-icon" style="background-color: #dcfce7;">
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 18h6m2 0a2 2 0 002-2h-2a2 2 0 00-2 2zm-6 0a2 2 0 00-2-2h2a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+            </div>
+            <h2 class="text-xl font-semibold text-center mb-2">Company</h2>
+            <p class="text-gray-500 text-center">Manage company profiles and connect with businesses.</p>
+            <div class="text-center mt-4">
+                <a href="/company" class="nav-link">View Company</a> <!-- Add your route here -->
+            </div>
+        </div>
+
+        <!-- Data Card -->
+        <div class="feature-card">
+            <div class="flex items-center justify-center mb-4">
+                <div class="feature-icon" style="background-color: #fef9c3;">
+                    <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17l3-6 3 6m-3-6v9"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v4m0 0v1m0-1a9 9 0 100 18 9 9 0 000-18z"></path>
+                    </svg>
+                </div>
+            </div>
+            <h2 class="text-xl font-semibold text-center mb-2">Data</h2>
+            <p class="text-gray-500 text-center">Access and manage supply chain data and reports.</p>
+            <div class="text-center mt-4">
+                <a href="/data" class="nav-link">View Data</a> <!-- Add your route here -->
+            </div>
+        </div>
+    </div>
+</div>
