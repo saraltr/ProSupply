@@ -5,8 +5,17 @@
 @using CSE_325_group_project.Data;
 @inject AppDbContext _dbContext
 @inject NavigationManager Navigation
+@rendermode InteractiveServer
 
 <PageTitle>Suppliers</PageTitle>
+<div>
+    <SearchBar OnSearch="PerformSearch" />
+</div>
+<div>
+    <button @onclick="GoBack" class="back-button">
+            <i class="fas fa-arrow-left"></i> Back
+    </button>
+</div>
 
 <h3>Suppliers List</h3>
 
@@ -29,15 +38,38 @@ else
 @code {
     private List<Supplier> suppliers = new();
 
+    private List<Supplier> fetchedSuppliers = new();
+    private string searchTerm = "";
+    private List<Supplier> filteredSuppliers = new();
+
     protected override async Task OnInitializedAsync()
     {
-        suppliers = await _dbContext.Suppliers
+        fetchedSuppliers = await _dbContext.Suppliers
         .AsNoTracking()
         .ToListAsync();
+        suppliers = fetchedSuppliers;
     }
 
     private string GenerateSlug(string name)
     {
         return name.ToLower().Replace(" ", "-");
+    }
+
+        private void PerformSearch(string term)
+    {
+        Console.WriteLine(term);
+        searchTerm = term;
+        filteredSuppliers = suppliers
+            .Where(c => c.SupplierName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+
+        suppliers = filteredSuppliers;
+    }
+    private void GoBack()
+     {
+        Console.WriteLine("I will go back");
+        suppliers = fetchedSuppliers;
+      
     }
 }

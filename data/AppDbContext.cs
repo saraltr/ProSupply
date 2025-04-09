@@ -30,6 +30,7 @@ namespace CSE_325_group_project.Data
                 entity.Property(c => c.Company_email).IsRequired().HasMaxLength(45);
                 entity.Property(c => c.Company_address).IsRequired();
                 entity.Property(c => c.Company_description).HasMaxLength(100);
+                entity.Property(c => c.Img_url).HasMaxLength(100);
                 entity.Property(c => c.Industry_id).IsRequired();
                 entity.Property(c => c.User_id).IsRequired();
             });
