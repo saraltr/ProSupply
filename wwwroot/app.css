@@ -131,3 +131,106 @@ h1:focus {
 .edit-icon i {
     font-size: 20px;
 }
+
+/* register page */
+.registerForm {
+    margin: 0 auto;
+    padding: .5rem;
+    margin-bottom: 1rem;
+    border: solid 1px;
+    border-radius: .5rem;
+    color: #2c3e50;
+    max-width: 80rem;
+}
+
+.registerForm label {
+    margin: .5rem .2rem;
+}
+
+.required-field:required {
+    border: 2px solid #FF5733;
+    background-color: #FFF5F5;
+}
+
+.required-field:required:valid {
+    border: 2px solid #26b050;
+    background-color: #b9d2be;
+}
+
+.signUp {
+    background-color: #2f5780;
+    color: white;
+    padding: .5rem 1rem;
+    border-radius: .3rem;
+    border: none;
+    margin: 0 auto;
+}
+
+.bronze 
+{
+    background-color: #2d7240;
+    color: white;
+}
+.gold 
+{
+    background-color: #2f5780;
+    color: white;
+}
+
+.silver {
+    background-color: #317673;
+}
+
+.price {
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+    background-color: #5387843a;
+}
+
+.card1 {
+    background: linear-gradient(135deg, #2c3e50, #2f5780);
+    color: white;
+}
+.card2 {
+    background: linear-gradient(135deg, #2c3e50, #2f5780);
+    color: white;
+}
+
+/* login page */
+.loginForm {
+    max-width: 650px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #2c3e50, #2f5780);
+    padding: 2rem;
+    color: white;
+    border-radius: 1rem;
+}
+
+.login {
+    background-color: #349c51;
+    color: white;
+    padding: .5rem 1rem;
+    border-radius: .3rem;
+    border: none;
+    margin: 0 auto;
+}
+
+.login:hover {
+    background-color: #58af71;
+}
+
+.btn-outline-info {
+    color: white;
+    border: solid 1px #3b7471;
+}
+.btn-outline-info:active:focus {
+    color: white;
+    border: solid 1px #3b7471;
+}
+
+.btn-outline-info:hover {
+    background-color: #58af71;
+    color: white;
+    border: solid 1px #58af71;
+}

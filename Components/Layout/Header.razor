@@ -1,7 +1,11 @@
 @inject NavigationManager NavManager
 @inject IJSRuntime JSRuntime
 @using System.Globalization
-
+@using CSE_325_group_project.Components.Pages
+@using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@rendermode InteractiveServer
 
 <div class="top-nav background-image-container">
     @if (!IsHomePage)
@@ -10,26 +14,47 @@
             <span class="bi bi-chevron-left"> Back</span>
         </button>
     }
+
     <h2>@FormattedRoute</h2>
-    <button class="login-btn">Sign In</button>
+    <AuthorizeView>
+        <Authorized>
+            <a class="login-btn" href="/logout">Logout</a>
+        </Authorized>
+        <NotAuthorized>
+            <a class="login-btn" href="/login">Login</a>
+        </NotAuthorized>
+    </AuthorizeView>
 </div>
 
 @code {
     private string FormattedRoute = "";
     private bool IsHomePage = false; // check if it's the home page
-    private string userName = "John"; // to replace with actual user name from our authentication system
+    private string userName = "";
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        // get authentication state
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authenticationState.User;
+
+        // check if the user is authenticated and get their username
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            userName = user.Identity.Name ?? "";
+        }
+
         var uri = NavManager.Uri;
         var path = new Uri(uri).AbsolutePath.Trim('/');
 
-        // Check if the current route is the home page
-        IsHomePage = string.IsNullOrEmpty(path); // Home page if the path is empty
+        // check if the current route is the home page
+        IsHomePage = string.IsNullOrEmpty(path); // home page if the path is empty
 
         if (IsHomePage)
         {
-            FormattedRoute = userName != null ? $"Welcome back, {userName}!" : "Welcome to ProSupply! Explore our supplies.";
+            // use the userName if available else use a default message
+            FormattedRoute = !string.IsNullOrWhiteSpace(userName)
+            ? $"Welcome back, {userName}!"
+            : "Welcome to ProSupply!";
         }
         @* for the supplier pages *@
         else if (path.StartsWith("suppliers/"))
@@ -67,4 +92,6 @@
             }
         }
     }
+
+    
 }

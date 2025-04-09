@@ -2,6 +2,8 @@
 @using Microsoft.EntityFrameworkCore
 @using CSE_325_group_project.Models;
 @using CSE_325_group_project.Data;
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject AppDbContext _dbContext
 @inject NavigationManager Navigation
 
@@ -105,10 +107,19 @@ else
     public string name { get; set; } = string.Empty;
 
     private Supplier? supplier;
-    private int userId = 1;
+    private int userId;
 
     protected override async Task OnInitializedAsync()
     {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authenticationState.User;
+
+        var userIdString = user.FindFirst("UserId")?.Value;
+
+        if (int.TryParse(userIdString, out int parsedUserId))
+        {
+            userId = parsedUserId;
+        }
         string formattedName = name.Replace("-", " ");
 
         supplier = await _dbContext.Suppliers

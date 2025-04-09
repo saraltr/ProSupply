@@ -1,0 +1,330 @@
+@page "/register"
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@using CSE_325_group_project.Models
+@using System.Net.Http.Headers
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject IHttpClientFactory HttpClientFactory
+@inject AuthenticationStateProvider AuthProvider
+@inject AppDbContext _dbContext
+@inject HttpClient HttpClient
+@inject IHttpClientFactory HttpClientFactory
+@rendermode InteractiveServer
+
+<PageTitle>Register - ProSupply</PageTitle>
+
+
+<div class="sign-up-container">
+
+
+    <EditForm Model="NewUser" OnValidSubmit="HandleSignUp" FormName="NewUser" class="registerForm shadow-sm">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="alert alert-danger mt-3" />
+
+        <fieldset>
+            <div class="container newUserForm">
+                <legend>User Information</legend>
+                @if (!string.IsNullOrEmpty(Message))
+                {
+                    <p class="message alert alert-danger mt-3">@Message</p>
+                }
+                <div class="card shadow-sm p-4 mb-4 card1">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="firstName" class="required">
+                                    <i class="fas fa-user"></i> First Name*:
+                                </label>
+                                <input id="firstName" type="text" @bind="NewUser.UserFname"
+                                    class="form-control required-field" placeholder="Enter your first name" required />
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="lastName" class="required">
+                                    <i class="fas fa-user"></i> Last Name*:
+                                </label>
+                                <input id="lastName" type="text" @bind="NewUser.UserLastName"
+                                    class="form-control required-field" placeholder="Enter your last name" required />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="email" class="required">
+                                    <i class="fas fa-envelope"></i> Email*:
+                                </label>
+                                <input id="email" type="email" @bind="NewUser.UserEmail"
+                                    class="form-control required-field" placeholder="Enter your email" required />
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="username" class="required">
+                                    <i class="fas fa-user-tag"></i> Username*:
+                                </label>
+                                <input id="username" type="text" @bind="NewUser.Username"
+                                    class="form-control required-field" placeholder="Choose a username" required />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="password" class="required">
+                                    <i class="fas fa-lock"></i> Password*:
+                                </label>
+                                <input id="password" type="password" @bind="NewUser.UserPassword"
+                                    class="form-control required-field" placeholder="Enter your password" required />
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="confirmPassword" class="required">
+                                    <i class="fas fa-lock"></i> Confirm Password*:
+                                </label>
+                                <input id="confirmPassword" type="password" @bind="ConfirmPassword"
+                                    class="form-control required-field" placeholder="Confirm your password" required />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+
+
+        <fieldset>
+            <div class="container">
+                <legend>Membership Levels</legend>
+                <div class="card shadow-sm p-4 mb-4 card2">
+                    <div class="form-group">
+                        <label for="userLevel">
+                            <i class="fas fa-users"></i> Choose Membership Level:
+                        </label>
+                        <select id="userLevel" @bind="NewUser.UserLevel" class="form-control" required>
+                            <option value="1">Basic Membership - Free</option>
+                            <option value="2">Standard Membership - $90 per year</option>
+                            <option value="3">Premium Membership - $150 per year</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="form-group text-center mt-1 mb-3">
+            <button type="submit" class="signUp">
+            <i class="fas fa-sign-in-alt text-center"></i> Sign Up
+        </button>
+        </div>
+    </EditForm>
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bronze">
+                        <h5 class="card-title"><i class="fas fa-crown"></i> Basic Membership - Free <br></h5>
+                    </div>
+                    <div class="price">
+                        <p><strong>$0</strong></p>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list">
+                            <li><strong>No Membership Fee:</strong> Completely free of charge.</li>
+                            <li><strong>Order from Suppliers:</strong> Browse and place orders from suppliers listed in
+                                our directory.</li>
+                            <li><strong>Request Quotes:</strong> Request custom quotes from suppliers for your business
+                                needs.</li>
+                            <li><strong>Access to Directory:</strong> Browse a wide variety of suppliers and services.
+                            </li>
+                            <li><strong>Direct Contact:</strong> Reach out to companies for inquiries, quotes, or
+                                support.</li>
+                        </ul>
+                        <p>This membership is perfect for <strong>small businesses</strong> and individuals looking to
+                            order directly from suppliers <strong>without any upfront costs.</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header silver text-white">
+                        <h5 class="card-title"><i class="fas fa-crown"></i> Standard Membership</h5>
+                    </div>
+                    <div class="price">
+                        <p><strong>$90 per year</strong></p>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list">
+                            <li><strong>Business Registration:</strong> Register your company in our directory, making
+                                it visible to clients.</li>
+                            <li><strong>10% Bulk Discount:</strong> Get a 10% discount on bulk purchases.</li>
+                            <li><strong>Direct Supplier Access:</strong> Ensure your business gets the supplies it needs
+                                with direct access to suppliers.</li>
+                            <li><strong>Priority Support:</strong> Get faster responses and priority customer support.
+                            </li>
+                            <li><strong>Newsletter Feature:</strong> Be featured in our monthly newsletter.</li>
+                        </ul>
+                        <p>Great for <strong>companies</strong> looking to expand their presence, <strong>save on bulk purchases</strong>, and connect
+                            directly with suppliers.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header gold">
+                        <h5 class="card-title"><i class="fas fa-crown"></i> Premium Membership</h5>
+                    </div>
+                    <div class="price">
+                        <p><strong>$150 per year</strong></p>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list">
+                            <li><strong>Supplier Dashboard:</strong> Manage orders, track customer inquiries, and
+                                monitor performance.</li>
+                            <li><strong>Exclusive Supplier Tools:</strong> Tools for managing your supplier information
+                                and optimizing the supply chain.</li>
+                            <li><strong>Featured Listing:</strong> Gain visibility in our online directory, making it
+                                easier for customers to find and contact you.</li>
+                            <li><strong>Priority Support:</strong> Faster responses and priority customer support.</li>
+                            <li><strong>Newsletter Promotion:</strong> Be highlighted in our monthly newsletter to reach
+                                a larger audience.</li>
+                            <li><strong>Promotions:</strong> Receive marketing support to boost visibility as a top
+                                supplier.</li>
+                        </ul>
+                        <p>Perfect for <strong>suppliers</strong> wanting full control over their dashboard, increased visibility, and
+                            <strong>direct connections</strong> with customers.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+@code {
+    private User NewUser { get; set; } = new User();
+    private string Message { get; set; } = "";
+    private string ConfirmPassword { get; set; } = "";
+
+    protected override void OnInitialized()
+    {
+        NewUser = new User
+        {
+            Username = string.Empty,
+            UserFname = string.Empty,
+            UserLastName = string.Empty,
+            UserEmail = string.Empty,
+            UserPassword = string.Empty,
+            UserLevel = 1
+        };
+    }
+
+    public class LoginResponse
+    {
+        public string Token { get; set; } = string.Empty;
+    }
+
+    private async Task HandleSignUp()
+    {
+        // check if passwords match before proceeding
+        if (NewUser.UserPassword != ConfirmPassword)
+        {
+            Message = "Passwords do not match. Try again!";
+            StateHasChanged();
+            return;
+        }
+
+        // check if the username or email already exists in the db
+        var existingUser = await _dbContext.Users
+        .FirstOrDefaultAsync(u => u.Username == NewUser.Username || u.UserEmail == NewUser.UserEmail);
+
+        if (existingUser != null)
+        {
+            if (existingUser.Username == NewUser.Username)
+            {
+                Message = "Username is already taken. Please choose a different one.";
+            }
+            else if (existingUser.UserEmail == NewUser.UserEmail)
+            {
+                Message = "Email is already registered. Please use a different email.";
+            }
+            StateHasChanged();
+            return;
+        }
+
+        // hash the password before saving the user
+        var passwordHasher = new PasswordHasher<User>();
+        NewUser.UserPassword = passwordHasher.HashPassword(NewUser, NewUser.UserPassword);
+
+        try
+        {
+            // Check if data is valid before saving to DB
+            if (string.IsNullOrWhiteSpace(NewUser.Username))
+            {
+                Message = "Form data is not being bound!";
+                StateHasChanged();
+                return;
+            }
+
+            // Add the user to the database
+            _dbContext.Users.Add(NewUser);
+            await _dbContext.SaveChangesAsync();
+
+            // Prepare the login request
+            var loginData = new
+            {
+                Username = NewUser.Username,
+                Password = ConfirmPassword
+            };
+            
+            // get the HttpClient using the factory with the "API" name whith the base address
+            var httpClient = HttpClientFactory.CreateClient("API");
+            // send a login request to authenticate the new user and get the token
+            var response = await httpClient.PostAsJsonAsync("/api/auth/sign-in", loginData);
+
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
+
+                // store the token in local storage
+                await JSRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", result.Token);
+
+                // set the Authorization header for future requests
+                HttpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", result.Token);
+
+                // notify the app about login by changing the authentication state
+                var customAuthProvider = (CustomAuthenticationStateProvider)AuthProvider;
+                customAuthProvider.MarkUserAsAuthenticated(result.Token);
+
+                // redirect to the home page
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                Message = "Login failed after registration. Please try again later.";
+                StateHasChanged();
+            }
+            
+        }
+        catch (Exception ex)
+        {
+            // display any unexpected exceptions errors
+            Message = $"Error: {ex.Message}";
+            StateHasChanged();
+        }
+    }
+}

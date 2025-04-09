@@ -2,6 +2,8 @@
 @using CSE_325_group_project.Models
 @using CSE_325_group_project.Data
 @using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject AppDbContext _dbContext
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
@@ -160,7 +162,17 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var currentUserId = 1; // Example current user id. Replace with actual logic
+        int currentUserId = 0; 
+
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authenticationState.User;
+
+        var userIdString = user.FindFirst("UserId")?.Value;
+
+        if (int.TryParse(userIdString, out int parsedUserId))
+        {
+            currentUserId = parsedUserId;
+        }
 
         // Fetch orders for the user
         userOrders = await _dbContext.NewOrder

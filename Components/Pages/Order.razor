@@ -4,11 +4,16 @@
 @using CSE_325_group_project.Data;
 @using Microsoft.EntityFrameworkCore
 @inject NavigationManager Navigation
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject HttpClient HttpClient
 @inject AppDbContext _dbContext
 @rendermode InteractiveServer
 
 <PageTitle>Order a Service</PageTitle>
+
+<AuthorizeView Context="authUser">
+    <Authorized>
 
 @if (supplier == null)
 {
@@ -106,6 +111,12 @@ else
 
 }
 
+</Authorized>
+    <NotAuthorized>
+        <h3>You will be redirected to the login page</h3>
+    </NotAuthorized>
+</AuthorizeView>
+
 @code {
     [Parameter] public int supplierId { get; set; }
     [Parameter] public int userId { get; set; }
@@ -187,5 +198,23 @@ else
 
         // redirect after placing order
         Navigation.NavigateTo($"/order-success/{NewOrder.OrderId}");
+    }
+
+    private bool isRedirecting = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !isRedirecting)
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            // if the user is not authenticated redirect to the login page
+            if (!user.Identity?.IsAuthenticated ?? true)
+            {
+                isRedirecting = true;
+                Navigation.NavigateTo("/login");
+            }
+        }
     }
 }

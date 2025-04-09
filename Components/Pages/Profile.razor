@@ -1,8 +1,17 @@
 @page "/profile"
 @inject OrderService OrderService
+@using Microsoft.AspNetCore.Authorization
+@using CSE_325_group_project.Components.Layout
+@using System.Security.Claims
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavManager
+@rendermode InteractiveServer
 
 <PageTitle>Profile</PageTitle>
 
+<AuthorizeView>
+    <Authorized>
 <section class="container mt-5">
     <div class="row justify-content-center">
 
@@ -56,15 +65,31 @@
 
     </div>
 </section>
+    </Authorized>
+    <NotAuthorized>
+        <Redirect></Redirect>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
-    private int userId = 1;
+    private int userId;
+    private string userRole;
 
     // Initialize the profile page by loading order count
     protected override async Task OnInitializedAsync()
     {
-        await OrderService.LoadOrderCount(userId); // Load the active order count
-        OrderService.OnChange += StateHasChanged; // Re-render the component when order count changes
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            userId = Convert.ToInt32(user.FindFirst(c => c.Type == "UserId")?.Value);
+            userRole = user.FindFirst(c => c.Type == ClaimTypes.Role)?.Value;
+        }
+
+        await OrderService.LoadOrderCount(userId); // load the active order count
+        OrderService.OnChange += StateHasChanged; // re render the component when order count changes
     }
 
     // Dispose the event when the component is destroyed

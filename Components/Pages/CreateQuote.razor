@@ -3,12 +3,17 @@
 @using CSE_325_group_project.Models;
 @using CSE_325_group_project.Data;
 @using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager Navigation
 @inject HttpClient HttpClient
 @inject AppDbContext _dbContext
 @rendermode InteractiveServer
 
 <PageTitle>Request a Quote</PageTitle>
+
+<AuthorizeView Context="authUser">
+    <Authorized>
 
 @if (supplier == null)
 {
@@ -49,6 +54,12 @@ else
     </EditForm>
 
 }
+
+    </Authorized>
+    <NotAuthorized>
+        <h3>You will be redirected to the login page</h3>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     [Parameter] public int supplierId { get; set; }
@@ -99,11 +110,29 @@ else
         catch (DbUpdateException ex)
         {
             var innerException = ex.InnerException?.Message ?? "No inner exception.";
-            Console.WriteLine($"Error while saving order: {innerException}");
+            @* Console.WriteLine($"Error while saving order: {innerException}"); *@
             throw;
         }
 
         // redirect after placing order
         Navigation.NavigateTo($"quote-success/{Quote.QuoteId}");
+    }
+
+    private bool isRedirecting = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !isRedirecting)
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            // if the user is not authenticated redirect to the login page
+            if (!user.Identity?.IsAuthenticated ?? true)
+            {
+                isRedirecting = true;
+                Navigation.NavigateTo("/login");
+            }
+        }
     }
 }

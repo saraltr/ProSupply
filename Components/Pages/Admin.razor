@@ -1,0 +1,35 @@
+@page "/protected"
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<PageTitle>Admin Dashboard</PageTitle>
+
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        <h3>Welcome to the Admin Dashboard</h3>
+    </Authorized>
+    <NotAuthorized>
+        <h3>You will be redirected to the login page</h3>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private bool isRedirecting = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !isRedirecting)
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            // If the user is not authenticated, redirect to the login page
+            if (!user.Identity?.IsAuthenticated ?? true)
+            {
+                isRedirecting = true;
+                NavigationManager.NavigateTo("/login");
+            }
+        }
+    }
+}
