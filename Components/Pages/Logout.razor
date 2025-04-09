@@ -1,0 +1,29 @@
+@page "/logout"
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject HttpClient HttpClient
+@inject AuthenticationStateProvider AuthProvider
+@rendermode InteractiveServer
+
+<h3>Logging out...</h3>
+
+@code {
+    private bool isRedirected = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // clear the token from localStorage
+            await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "authToken");
+            var customAuthProvider = (CustomAuthenticationStateProvider)AuthProvider;
+            customAuthProvider.MarkUserAsLoggedOut();
+            NavigationManager.NavigateTo("/login");
+
+
+            // ensure the redirect only happens once
+            isRedirected = true;
+            StateHasChanged();
+        }
+    }
+}
