@@ -71,10 +71,7 @@
         }
     </ul> 
 
-    @* <ConfirmationDialog IsVisible="@showConfirmationDialog"
-                   OnConfirm="DeleteCompany"
-                   OnCancel="CancelDelete"
-                   CloseDialog="CloseDialog" /> *@
+   <ConfirmationDialog @ref="_confirmationDialog" OnConfirm="HandleConfirm" />
 
 @* <div class="companies-table-data">
     <table class="company-table">
