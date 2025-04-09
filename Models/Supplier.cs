@@ -40,6 +40,10 @@ namespace CSE_325_group_project.Models
         public string SupplierDescription { get; set; }
 
         [Required]
+        [Column("supplier_logo")]
+        public string SupplierLogo { get; set; }
+
+        [Required]
         [Column("user_id")]
         public int UserId { get; set; }
 
@@ -70,6 +74,7 @@ namespace CSE_325_group_project.Models
             string supplierEmail,
             string supplierAddress, 
             string supplierDescription, 
+            string supplierLogo,
             int userId, 
             int? companyId = null)
         {
@@ -80,6 +85,7 @@ namespace CSE_325_group_project.Models
             SupplierEmail = supplierEmail;
             SupplierAddress = supplierAddress;
             SupplierDescription = supplierDescription;
+            SupplierLogo = supplierLogo;
             UserId = userId;
             CompanyId = companyId;
             Services = [];

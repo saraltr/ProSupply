@@ -46,6 +46,7 @@ namespace CSE_325_group_project.Data
                 entity.Property(s => s.SupplierEmail).IsRequired().HasMaxLength(45);
                 entity.Property(s => s.SupplierAddress).IsRequired().HasMaxLength(45);
                 entity.Property(s => s.SupplierDescription).IsRequired().HasMaxLength(200);
+                entity.Property(s => s.SupplierLogo).IsRequired();
 
                 entity.HasOne(s => s.Company)
                       .WithMany()

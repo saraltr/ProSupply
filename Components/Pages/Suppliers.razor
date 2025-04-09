@@ -7,7 +7,8 @@
 @inject NavigationManager Navigation
 @rendermode InteractiveServer
 
-<PageTitle>Suppliers</PageTitle>
+<PageTitle>Suppliers Directory</PageTitle>
+
 <div>
     <SearchBar OnSearch="PerformSearch" />
 </div>
@@ -17,22 +18,36 @@
     </button>
 </div>
 
-<h3>Suppliers List</h3>
-
 @if (suppliers == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-    <ul>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 py-3">
         @foreach (var s in suppliers)
         {
-            <li>
-                <NavLink href="@($"/suppliers/{GenerateSlug(s.SupplierName)}")">@s.SupplierName</NavLink>
-            </li>
+            <div class="col">
+                <div class="card h-100 shadow-sm supplierCard">
+                    <NavLink class="text-decoration-none text-dark" href="@($"/suppliers/{GenerateSlug(s.SupplierName)}")">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="img/@s.SupplierLogo" alt="@s.SupplierName Logo" class="me-3" width="50"
+                                    height="40" />
+                                <h5 class="card-title mb-0">@s.SupplierName</h5>
+                            </div>
+
+                            <p class="card-text text-muted mb-2">@s.SupplierDescription</p>
+                            <div class="border-top pt-2">
+                                <h6 class="mb-0 text-primary">@s.Category.Category_name</h6>
+                                <small class="text-muted">@s.Category.Category_description</small>
+                            </div>
+                        </div>
+                    </NavLink>
+                </div>
+            </div>
         }
-    </ul>
+    </div>
 }
 
 @code {
@@ -45,6 +60,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         fetchedSuppliers = await _dbContext.Suppliers
+        .Include(c => c.Category)
         .AsNoTracking()
         .ToListAsync();
         suppliers = fetchedSuppliers;

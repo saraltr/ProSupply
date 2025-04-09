@@ -32,12 +32,12 @@ else
         <DataAnnotationsValidator />
         <ValidationSummary />
 
-        <div class="container card p-4">
+        <div class="container card p-4 orderForm">
             <div class="row g-4">
 
                 <div class="col-md-6">
-                    <div class="card shadow-sm p-3">
-                        <h4 class="text-center mb-4"><strong>Select Services:</strong></h4>
+                    <div class="p-3 serviceCard">
+                        <h4 class="mb-4"><strong>Select Services:</strong></h4>
 
                         @foreach (var service in supplier.Services)
                         {
@@ -56,11 +56,11 @@ else
                         </div>
                     </div>
 
-                    <div class="card shadow-sm p-3 mt-3">
+                    <div class=" p-3 mt-3 instCard">
                         <label for="orderNotes" class="form-label fw-bold fs-5">
                             <i class="bi bi-chat-left-text"></i> Order Specification
                         </label>
-                        <p class="text-muted small">
+                        <p class="text-white small">
                             Any special instructions for the supplier (e.g., delivery preferences, customization requests,
                             or important details).
                         </p>
@@ -70,7 +70,7 @@ else
                 </div>
 
                 <div class="col-md-6">
-                    <div class="card shadow-sm p-3">
+                    <div class="card shadow-sm p-3 infoCard">
                         <h4 class="text-center mb-4"><strong>Deliver To:</strong></h4>
 
                         <div class="mb-3">
