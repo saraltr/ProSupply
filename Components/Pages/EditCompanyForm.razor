@@ -8,7 +8,7 @@
 @inject HttpClient Http
 @inject AppDbContext _dbContext
 @inject NavigationManager Navigation
-@inject NavigationManager Navigation
+
 
 @rendermode RenderMode.InteractiveServer //helps to rerender after input changed
 
@@ -47,6 +47,19 @@
                    @bind-Value="Company.Company_address" />
     </div>
 
+    <div class="form-group">
+        <label for="CompanyDescription">Description</label>
+        <InputText id="CompanyDescription" 
+                    class="form-control"
+                    @bind-Value="Company.Company_description" />
+    </div>
+
+<div class="form-group">
+        <label for="ImgUrl">ImgUrl</label>
+        <InputText id="ImgUrl" 
+                   class="form-control" 
+                   @bind-Value="Company.Img_url" />
+    </div>
     <div class="form-group">
         <label for="IndustryId">Industry ID</label>
         <InputNumber id="IndustryId" 
@@ -115,11 +128,15 @@
 
     private async Task HandleSubmit(){
 
-        _dbContext.Companies.Update(Company);
-        _dbContext.SaveChangesAsync();
+         _dbContext.Companies.Update(Company);
+        await _dbContext.SaveChangesAsync();
         Console.WriteLine($"Company Info Updated: Name: {Company.Company_name}, Email: {Company.Company_email}, Address: {Company.Company_address}");
         
-        Navigation.NavigateTo("/data");
+        
+            Navigation.NavigateTo("/companies");
+            StateHasChanged();
+        
+        
     }
     
 

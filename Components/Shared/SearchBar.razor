@@ -1,6 +1,7 @@
 @code {
     [Parameter] public EventCallback<string> OnSearch { get; set; }
     private string searchTerm = "";
+    private Guid inputKey = Guid.NewGuid();
 
     private async Task Search()
     {
@@ -9,7 +10,7 @@
 }
 
 <div class="search-bar">
-    <input type="text" placeholder="Search..." @bind="searchTerm" @bind:event="oninput" />
+    <input type="text" placeholder="Search..." @bind="searchTerm" @bind:event="oninput"  @key="inputKey" />
     <button @onclick="Search">
         <i class="fas fa-search"></i>
     </button>

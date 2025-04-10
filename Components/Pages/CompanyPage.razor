@@ -1,0 +1,146 @@
+@page "/company/{id}"
+
+@using Microsoft.EntityFrameworkCore
+@using CSE_325_group_project.Models;
+@using CSE_325_group_project.Data;
+@inject AppDbContext _dbContext
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@inject IJSRuntime JS 
+@* gives opportunity to events being fired *@
+@rendermode InteractiveServer
+@inject HttpClient HttpClient
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+
+
+
+<PageTitle>Company Info : @company.Company_name</PageTitle>
+
+@if ( company == null){
+    <p><em>Loading...</em></p>
+}
+else {
+
+
+    <div class="card shadow-sm rounded-lg mb-4">
+        <div class="card-actions">
+        <a href="/edit_company/@company.Company_id" class="action-btn edit-icon">
+            <i class="fas fa-edit"></i>
+        </a>
+        <button class="action-btn delete-btn" @onclick="() => ShowConfirmDialog(company.Company_id)">
+            <i class="fas fa-trash"></i>
+        </button>
+    </div>
+        <div class="card-header">
+            <h3>About @company.Company_name</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>📞 Phone:</strong> @company.Company_phone</p>
+                    <p><strong>✉️ Email:</strong> @company.Company_email</p>
+                    <p><strong>📍 Address:</strong> @company.Company_address</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>ℹ️ Description:</strong> @(string.IsNullOrEmpty(company.Company_description) ? "No description available" : company.Company_description)</p>
+                    <p><strong>📌 Industry:</strong> <span class="industry">@GetIndustryName(company.Industry_id)</span></p>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+  
+<ConfirmationDialog @ref="_confirmationDialog" OnConfirm="HandleConfirm" />
+}
+
+
+
+@code{
+    [Parameter]
+    public string id { get; set; }
+
+    private Company? company;
+    private int userId;
+    private List<Industry>  fetchedIndustries = new(); 
+
+    private List<Industry>  industries = new(); 
+
+    private ConfirmationDialog _confirmationDialog;  
+    private int companyIdToDelete;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authenticationState.User;
+
+        var userIdString = user.FindFirst("UserId")?.Value;
+
+        if (int.TryParse(userIdString, out int parsedUserId))
+        {
+            userId = parsedUserId;
+        }
+        
+
+        company = await _dbContext.Companies
+        .AsNoTracking()
+        .FirstOrDefaultAsync(c => c.Company_id == int.Parse(id));
+
+        fetchedIndustries = await _dbContext.Industries.ToListAsync();
+        industries = fetchedIndustries;
+    }
+
+    string GetIndustryName(int industryId)
+{
+    Console.WriteLine(industryId);
+
+    foreach (var ind in industries)
+    {
+        Console.WriteLine(ind.Industry_Name);
+
+        if (ind.Industry_id == industryId)
+        {
+            return ind.Industry_Name;
+        }
+    }
+
+    return "Industry not found";
+}
+
+   private void ShowConfirmDialog(int companyId)
+    {
+       Console.WriteLine("I will open Confirm Window HEEELLLLOOOOO");
+        _confirmationDialog.Show();
+        companyIdToDelete = companyId;
+    }
+
+    private void CloseDialog()
+    {
+         _confirmationDialog.Hide();
+    }
+
+    private async void HandleConfirm(bool confirmed)
+    {
+        // Logic to delete the company from the database
+        
+        
+         if (confirmed){
+            
+        
+            _dbContext.Companies.Remove(company);
+            await _dbContext.SaveChangesAsync();
+       
+    }
+
+        CloseDialog();
+        StateHasChanged();
+    }
+
+
+
+}
+
+
+

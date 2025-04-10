@@ -13,6 +13,7 @@
 
 <div>
     <SearchBar OnSearch="PerformSearch" />
+    <p>@searchTerm</p>
 </div>
 <div>
     <button @onclick="GoBack" class="back-button">
@@ -42,11 +43,10 @@
     <img src="@company.Img_url" alt="@company.Company_name" class="company-logo" />
 
     <h2>@company.Company_name</h2>
-    <p><strong>Phone:</strong> @company.Company_phone</p>
-    <p><strong>Email:</strong> @company.Company_email</p>
-    <p><strong>Address:</strong> @company.Company_address</p>
-    <p><strong>Description:</strong> @(string.IsNullOrEmpty(company.Company_description) ? "No description available" : company.Company_description)</p>
+
     <p><strong>Industry:</strong> <span class="industry">@GetIndustryName(company.Industry_id)</span></p>
+
+    <a href="/company/@company.Company_id">More Info</a>
 </div>
         }
     </ul> 
@@ -59,9 +59,15 @@
   @* gets the companies list *@
     private List<Company> companies = new();
     private List<Company> fetchedCompanies = new();
+
+    private List<Industry>  fetchedIndustries = new(); 
+
+    private List<Industry>  industries = new();    
+        
     private int companyIdToDelete;
 
     private string searchTerm = "";
+    private Guid inputKey = Guid.NewGuid();
     private List<Company> filteredCompanies = new();
 
         private void PerformSearch(string term)
@@ -74,12 +80,15 @@
 
 
         companies = filteredCompanies;
+        searchTerm= string.Empty;
+        StateHasChanged();
     }
-    private void GoBack()
+    private async void GoBack()
      {
         Console.WriteLine("I will go back");
         companies = fetchedCompanies;
-      
+        
+        
     }
 
     private ConfirmationDialog _confirmationDialog;  
@@ -89,13 +98,12 @@
        
         fetchedCompanies = await _dbContext.Companies.ToListAsync();
         companies = fetchedCompanies;
+        fetchedIndustries = await _dbContext.Industries.ToListAsync();
+        industries = fetchedIndustries;
+        
     }
   
-    string GetIndustryName(int industryId)
-        {
-            string[] industryList = { "Technology", "Manufacturing", "Retail", "Healthcare", "Automotive", "Food & Beverage" };
-            return industryId >= 1 && industryId <= industryList.Length ? industryList[industryId - 1] : "Unknown";
-        }
+   
 
      private void ShowConfirmDialog(int companyId)
     {
@@ -119,14 +127,33 @@
         {
             _dbContext.Companies.Remove(companyToDelete);
             await _dbContext.SaveChangesAsync();
+            companies = companies.Where(c => c.Company_id != companyIdToDelete).ToList();
+            
         }
     }
 
         CloseDialog();
+        
         StateHasChanged();
+        
     }
 
- 
+ string GetIndustryName(int industryId)
+{
+    
+
+    foreach (var ind in industries)
+    {
+        
+
+        if (ind.Industry_id == industryId)
+        {
+            return ind.Industry_Name;
+        }
+    }
+
+    return "Industry not found";
+}
 
     private void CancelDelete()
     {

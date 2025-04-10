@@ -43,6 +43,15 @@
         <InputText id="CompanyDescription" class="form-control" @bind-Value="Company!.Company_description" />
     </div>
 
+
+
+    <InputFile OnChange="HandleFileSelected" />
+
+        @if (uploadedFileName != null)
+        {
+            <p>Uploaded file: @uploadedFileName</p>
+        }
+
     <div class="form-group">
         <label for="IndustryId">Industry ID</label>
         <InputNumber id="IndustryId" class="form-control" @bind-Value="Company!.Industry_id"  />
@@ -68,22 +77,66 @@
    [SupplyParameterFromForm]
     private Company? Company { get; set; }
 
+    IBrowserFile file;
+
      protected override void OnInitialized() 
       { 
         Company ??= new() { };
     
   
       }
+    
 
     private async void HandleValidSubmit()
     {
         // Your form submission logic
-        
+        Company.Img_url = Path.Combine("uploads", file.Name).Replace("\\", "/");
         _dbContext.Companies.Add(Company);
-        await _dbContext.SaveChangesAsync();       
+        await _dbContext.SaveChangesAsync(); 
+
+        // Optional: Save to disk
+        var path = Path.Combine("wwwroot/uploads", file.Name);
+
+        // Ensure the uploads folder exists
+        Directory.CreateDirectory("wwwroot/uploads");
+
+        using var stream = new FileStream(path, FileMode.Create);
+        await file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024).CopyToAsync(stream); // 10 MB max
+
+        uploadedFileName = file.Name;      
         
 
     }
+
+    private string? uploadedFileName;
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        file = e.File;
+
+        
+    }
+}
+
+
+
+
+    @* string GetIndustryName(int industryId)
+{
+    Console.WriteLine(industryId);
+
+    foreach (var ind in industries)
+    {
+        Console.WriteLine(ind.Industry_Name);
+
+        if (ind.Industry_id == industryId)
+        {
+            return ind.Industry_Name;
+        }
+    }
+
+    return "Industry not found";
+} *@
 
     
 }

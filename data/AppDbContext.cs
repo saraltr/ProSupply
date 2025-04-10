@@ -16,6 +16,8 @@ namespace CSE_325_group_project.Data
     public DbSet<Service> Services { get; set; }
     public DbSet<Quote> Quotes { get; set; }
 
+    public DbSet<Industry> Industries { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -143,6 +145,14 @@ namespace CSE_325_group_project.Data
                 .HasForeignKey(q => q.SupplierId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            });
+
+            modelBuilder.Entity<Industry>( entity => 
+            {
+                entity.ToTable("industry");
+                entity.HasKey(i => i.Industry_id);
+
+                entity.Property(i => i.Industry_Name);
             });
         }
     }
