@@ -9,7 +9,7 @@
 @inject AppDbContext _dbContext
 
 <h2>Create Company</h2>
-
+<div class="company-form">
 <EditForm Model="@Company" OnValidSubmit="HandleValidSubmit" FormName="CompanyForm">
     <DataAnnotationsValidator />
     <ValidationSummary />
@@ -52,11 +52,22 @@
             <p>Uploaded file: @uploadedFileName</p>
         }
 
-    <div class="form-group">
+    @* <div class="form-group">
         <label for="IndustryId">Industry ID</label>
         <InputNumber id="IndustryId" class="form-control" @bind-Value="Company!.Industry_id"  />
-        @* <ValidationMessage For="@(() => Company.industry_id)" /> *@
-    </div>
+       
+    </div> *@
+
+   <div class="form-group">
+    <label for="IndustrySelect">Industry</label>
+    <select id="IndustrySelect" class="form-control" @bind="Company!.Industry_id">
+        <option value="">-- Please choose --</option>
+        @foreach (var ind in industries)
+        {
+            <option value="@ind.Industry_id">@ind.Industry_Name</option>       
+        }
+    </select>
+</div>
 
     <div class="form-group">
         <label for="UserId">User ID</label>
@@ -66,6 +77,7 @@
 
     <button type="submit" class="btn btn-primary">Create</button>
 </EditForm>
+</div>
 
 @code {
 
@@ -79,9 +91,13 @@
 
     IBrowserFile file;
 
-     protected override void OnInitialized() 
+    private List<Industry> industries = new ();
+    private List<Industry> fetchedIndustries = new ();
+     protected override async Task OnInitializedAsync()
       { 
         Company ??= new() { };
+        fetchedIndustries = await _dbContext.Industries.ToListAsync();
+        industries = fetchedIndustries;
     
   
       }

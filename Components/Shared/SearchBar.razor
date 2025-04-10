@@ -6,6 +6,8 @@
     private async Task Search()
     {
         await OnSearch.InvokeAsync(searchTerm);
+        searchTerm = "";
+        StateHasChanged();
     }
 }
 

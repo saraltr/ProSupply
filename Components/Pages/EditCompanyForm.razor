@@ -12,7 +12,7 @@
 
 @rendermode RenderMode.InteractiveServer //helps to rerender after input changed
 
-
+<div class="company-form">
  <EditForm Model="@Company" OnValidSubmit="HandleSubmit" FormName="EditCompanyForm">
     <DataAnnotationsValidator />
     <ValidationSummary />
@@ -60,11 +60,15 @@
                    class="form-control" 
                    @bind-Value="Company.Img_url" />
     </div>
-    <div class="form-group">
-        <label for="IndustryId">Industry ID</label>
-        <InputNumber id="IndustryId" 
-                     class="form-control" 
-                     @bind-Value="Company.Industry_id" />
+     <div class="form-group">
+    <label for="IndustrySelect">Industry</label>
+    <select id="IndustrySelect" class="form-control" @bind="Company!.Industry_id">
+        <option value="">-- Please choose --</option>
+        @foreach (var ind in industries)
+        {
+            <option value="@ind.Industry_id">@ind.Industry_Name</option>       
+        }
+    </select>
     </div>
 
     <div class="form-group">
@@ -76,7 +80,7 @@
 
     <button type="submit" class="btn btn-primary">Submit</button>
 </EditForm>
-
+</div>
 
 @code {
     [Parameter]
@@ -84,6 +88,9 @@
 
   [SupplyParameterFromForm]
     private Company? Company { get; set; }
+
+    private List<Industry> industries = new ();
+    private List<Industry> fetchedIndustries = new ();
 
    // private Company? CompanyEdit { get; set; }
     // Simulating fetching data from a service or database
@@ -97,21 +104,9 @@
        // CompanyEdit ??=new() {};
         // Simulating fetching company data
         Company  = await GetCompanyByIdAsync(id);
-        if (Company != null)
-            {
-         @* CompanyEdit = new Company
-                {
-                    company_id = Company.company_id,
-                    company_name = Company.company_name,
-                    company_phone = Company.company_phone,
-                    company_email = Company.company_email,
-                    company_address = Company.company_address,
-                    company_description = Company.company_description,
-                    industry_id = Company.industry_id,
-                    user_id = Company.user_id
-                }; *@
 
-            }
+        fetchedIndustries = await _dbContext.Industries.ToListAsync();
+        industries = fetchedIndustries;
                
     }
 
@@ -140,45 +135,7 @@
     }
     
 
-        @* var existingCompany = _dbContext.Companies.Local
-                            .FirstOrDefault(c => c.company_id == CompanyEdit.company_id); *@
-
-    @* if (existingCompany != null)
-    {
-        // Detach the existing entity if it's being tracked
-        _dbContext.Entry(existingCompany).State = EntityState.Detached;
-    }
-
-    // Now update the entity with the values from the form
-    if (CompanyEdit != null)
-            Company.company_name = CompanyEdit.company_name;
-            Company.company_phone = CompanyEdit.company_phone;
-            Company.company_email = CompanyEdit.company_email;
-            Company.company_address = CompanyEdit.company_address;
-            Company.company_description = CompanyEdit.company_description;
-            Company.industry_id = CompanyEdit.industry_id;
-            Company.user_id = CompanyEdit.user_id; *@
-    
-
-    
-        // Handle form submission
-      // Handle form submission
-        @* if (CompanyEdit != null)
-
-        {
-            Company.company_name = CompanyEdit.company_name;
-            Company.company_phone = CompanyEdit.company_phone;
-            Company.company_email = CompanyEdit.company_email;
-            Company.company_address = CompanyEdit.company_address;
-            Company.company_description = CompanyEdit.company_description;
-            Company.industry_id = CompanyEdit.industry_id;
-            Company.user_id = CompanyEdit.user_id;
-
-            _dbContext.Companies.Update(CompanyEdit);
-            _dbContext.SaveChanges();
-            Console.WriteLine($"Company Info Updated: Name: {CompanyEdit.company_name}, Email: {CompanyEdit.company_email}, Address: {CompanyEdit.company_address}");
-        } *@
-    
+       
 
     private void CancelEdit()
     {

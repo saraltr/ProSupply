@@ -1,0 +1,31 @@
+@typeparam TItem
+<div class="filter-component">
+    <label>@Label</label>
+    <select class="form-control"  @onchange="HandleChange">
+        <option value="">-- Please choose --</option>
+        @foreach (var item in Items)
+        {
+            <option value="@GetId(item)">@GetName(item)</option>
+        }
+    </select>
+</div>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Filter";
+    [Parameter] public List<TItem> Items { get; set; } = new();
+    [Parameter] public Func<TItem, int> GetId { get; set; } = default!;
+    [Parameter] public Func<TItem, string> GetName { get; set; } = default!;
+    [Parameter] public EventCallback<int?> OnSelectedChanged { get; set; }
+
+    private int? SelectedId { get; set; }
+
+    private async Task HandleChange(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int val))
+            SelectedId = val;
+        else
+            SelectedId = null;
+
+        await OnSelectedChanged.InvokeAsync(SelectedId);
+    }
+}
