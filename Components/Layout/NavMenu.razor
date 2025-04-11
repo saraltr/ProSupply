@@ -87,6 +87,7 @@
         {
             userId = parsedUserId;
         }
+        
 
         await OrderService.LoadOrderCount(userId);
         OrderService.OnChange += StateHasChanged;

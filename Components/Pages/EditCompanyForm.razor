@@ -8,6 +8,8 @@
 @inject HttpClient Http
 @inject AppDbContext _dbContext
 @inject NavigationManager Navigation
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 
 @rendermode RenderMode.InteractiveServer //helps to rerender after input changed
@@ -22,7 +24,7 @@
         <input id="CompanyName" 
                    class="form-control" 
                    @bind-Value="Company!.Company_name" @bind-Value:event="oninput" />
-        <p>Current model value: @Company.Company_name</p>
+       
     </div>
 
     <div class="form-group">
@@ -58,8 +60,15 @@
         <label for="ImgUrl">ImgUrl</label>
         <InputText id="ImgUrl" 
                    class="form-control" 
-                   @bind-Value="Company.Img_url" />
+                   @bind-Value="@companyFileName" />
     </div>
+     <InputFile OnChange="HandleFileSelected" />
+
+        @if (uploadedFileName != null)
+        {
+            <p>Uploaded file: @uploadedFileName</p>
+        }
+
      <div class="form-group">
     <label for="IndustrySelect">Industry</label>
     <select id="IndustrySelect" class="form-control" @bind="Company!.Industry_id">
@@ -71,12 +80,7 @@
     </select>
     </div>
 
-    <div class="form-group">
-        <label for="UserId">User ID</label>
-        <InputNumber id="UserId" 
-                     class="form-control" 
-                     @bind-Value="Company.User_id" />
-    </div>
+   
 
     <button type="submit" class="btn btn-primary">Submit</button>
 </EditForm>
@@ -86,11 +90,16 @@
     [Parameter]
     public string id { get; set; } // Capture the id from the URL
 
-  [SupplyParameterFromForm]
+    [SupplyParameterFromForm]
     private Company? Company { get; set; }
-
+    IBrowserFile file;
+    private string? companyFileName;
+    private string? uploadedFileName;
     private List<Industry> industries = new ();
     private List<Industry> fetchedIndustries = new ();
+   
+
+    private int userId;
 
    // private Company? CompanyEdit { get; set; }
     // Simulating fetching data from a service or database
@@ -107,6 +116,17 @@
 
         fetchedIndustries = await _dbContext.Industries.ToListAsync();
         industries = fetchedIndustries;
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authenticationState.User;
+
+        var userIdString = user.FindFirst("UserId")?.Value;
+
+        if (int.TryParse(userIdString, out int parsedUserId))
+        {
+            userId = parsedUserId;
+            
+        }
+        companyFileName = Company.Img_url;
                
     }
 
@@ -123,14 +143,41 @@
 
     private async Task HandleSubmit(){
 
-         _dbContext.Companies.Update(Company);
+         
+
+
+        Company.Img_url = Path.Combine("uploads", file.Name).Replace("\\", "/");
+        Company.User_id = userId;
+
+        
+
+        // Optional: Save to disk
+        var path = Path.Combine("wwwroot/uploads", file.Name);
+
+        // Ensure the uploads folder exists
+        Directory.CreateDirectory("wwwroot/uploads");
+
+        using var stream = new FileStream(path, FileMode.Create);
+        await file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024).CopyToAsync(stream); // 10 MB max
+        uploadedFileName = file.Name;
+        //companyFileName = uploadedFileName;
+        StateHasChanged();
+
+        _dbContext.Companies.Update(Company);
         await _dbContext.SaveChangesAsync();
         Console.WriteLine($"Company Info Updated: Name: {Company.Company_name}, Email: {Company.Company_email}, Address: {Company.Company_address}");
         
         
-            Navigation.NavigateTo("/companies");
-            StateHasChanged();
+        Navigation.NavigateTo("/companies");
+        StateHasChanged();
         
+        
+    }
+
+     private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        file = e.File;
+        companyFileName = file.Name;
         
     }
     
