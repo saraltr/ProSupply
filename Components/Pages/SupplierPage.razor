@@ -17,20 +17,33 @@
 }
 else
 {
-    <div class="card shadow-sm rounded-lg mb-4">
-        <div class="card-header">
-            <h3>About @supplier.SupplierName</h3>
+    <div class="card rounded-3 mb-5 border-0">
+        <div class="card-header bg-white border-bottom-0 d-flex align-items-center">
+            <img src="img/@supplier.SupplierLogo" alt="@supplier.SupplierName Logo" class="me-3 rounded"
+                style="width: 60px; height: 60px; object-fit: contain;" />
+            <div>
+                <h3 class="mb-0">@supplier.SupplierName</h3>
+                <small class="text-muted">@supplier.Category.Category_description</small>
+            </div>
         </div>
-        <div class="card-body">
-            <div class="row">
+
+        <div class="card-body pt-0">
+            <hr />
+
+            <div class="row g-4">
                 <div class="col-md-6">
-                    <p><strong>📞 Phone:</strong> @supplier.SupplierPhone</p>
-                    <p><strong>✉️ Email:</strong> @supplier.SupplierEmail</p>
-                    <p><strong>📍 Address:</strong> @supplier.SupplierAddress</p>
+                    <p class="mb-2"><i class="bi bi-telephone-fill text-primary me-2"></i><strong>Phone:</strong>
+                        @supplier.SupplierPhone</p>
+                    <p class="mb-2"><i class="bi bi-envelope-fill text-primary me-2"></i><strong>Email:</strong>
+                        @supplier.SupplierEmail</p>
+                    <p class="mb-2"><i class="bi bi-geo-alt-fill text-primary me-2"></i><strong>Address:</strong>
+                        @supplier.SupplierAddress</p>
                 </div>
                 <div class="col-md-6">
-                    <p><strong>ℹ️ Description:</strong> @supplier.SupplierDescription</p>
-                    <p><strong>📌 Category:</strong> @supplier.Category?.Category_name</p>
+                    <p class="mb-2"><i class="bi bi-info-circle-fill text-primary me-2"></i><strong>Description:</strong>
+                        @supplier.SupplierDescription</p>
+                    <p class="mb-2"><i class="bi bi-tag-fill text-primary me-2"></i><strong>Category:</strong>
+                        @supplier.Category?.Category_name</p>
                 </div>
             </div>
         </div>

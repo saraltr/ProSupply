@@ -17,11 +17,11 @@
         <ValidationSummary />
 
         <fieldset>
+            <legend class="text-center"><h3><strong>Welcome back!</strong></h3></legend>
             @if (!string.IsNullOrEmpty(errorMessage))
             {
                 <div class="alert alert-danger mt-3">@errorMessage</div>
             }
-            <legend class="text-center"><h3><strong>Welcome back!</strong></h3></legend>
 
             <div class="mb-3">
                 <label for="username"><i class="fas fa-user"></i> Username</label>

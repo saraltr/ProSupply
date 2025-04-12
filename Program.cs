@@ -29,6 +29,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // register services
 builder.Services.AddScoped<OrderService>();
+// register supplier services
+builder.Services.AddScoped<SupplierService>();
+// register company servie
+builder.Services.AddScoped<CompanyService>();
 
 // add Razor Components
 builder.Services.AddRazorComponents()

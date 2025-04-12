@@ -21,8 +21,6 @@
 
     <EditForm Model="NewUser" OnValidSubmit="HandleSignUp" FormName="NewUser" class="registerForm shadow-sm">
         <DataAnnotationsValidator />
-        <ValidationSummary class="alert alert-danger mt-3" />
-
         <fieldset>
             <div class="container newUserForm">
                 <legend>User Information</legend>
@@ -39,6 +37,7 @@
                                 </label>
                                 <input id="firstName" type="text" @bind="NewUser.UserFname"
                                     class="form-control required-field" placeholder="Enter your first name" required />
+                                <ValidationMessage class="alert alert-danger mt-1" For="@(() => NewUser.UserFname)"></ValidationMessage>
                             </div>
                         </div>
 
@@ -49,6 +48,8 @@
                                 </label>
                                 <input id="lastName" type="text" @bind="NewUser.UserLastName"
                                     class="form-control required-field" placeholder="Enter your last name" required />
+                                <ValidationMessage class="alert alert-danger mt-1" For="@(() => NewUser.UserLastName)">
+                                </ValidationMessage>
                             </div>
                         </div>
                     </div>
@@ -61,6 +62,8 @@
                                 </label>
                                 <input id="email" type="email" @bind="NewUser.UserEmail"
                                     class="form-control required-field" placeholder="Enter your email" required />
+                                <ValidationMessage class="alert alert-danger mt-1" For="@(() => NewUser.UserEmail)">
+                                </ValidationMessage>
                             </div>
                         </div>
 
@@ -71,6 +74,8 @@
                                 </label>
                                 <input id="username" type="text" @bind="NewUser.Username"
                                     class="form-control required-field" placeholder="Choose a username" required />
+                                <ValidationMessage class="alert alert-danger mt-1" For="@(() => NewUser.Username)">
+                                </ValidationMessage>
                             </div>
                         </div>
                     </div>
@@ -83,6 +88,8 @@
                                 </label>
                                 <input id="password" type="password" @bind="NewUser.UserPassword"
                                     class="form-control required-field" placeholder="Enter your password" required />
+                                <ValidationMessage class="alert alert-danger mt-1" For="@(() => NewUser.UserPassword)">
+                                </ValidationMessage>
                             </div>
                         </div>
 

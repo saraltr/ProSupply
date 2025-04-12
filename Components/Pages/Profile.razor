@@ -2,95 +2,348 @@
 @inject OrderService OrderService
 @using Microsoft.AspNetCore.Authorization
 @using CSE_325_group_project.Components.Layout
+@using CSE_325_group_project.Models
 @using System.Security.Claims
+@using Microsoft.EntityFrameworkCore
 @inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavManager
+@inject SupplierService SupplierService
+@inject CompanyService CompanyService
 @rendermode InteractiveServer
 
 <PageTitle>Profile</PageTitle>
 
-<AuthorizeView>
-    <Authorized>
-<section class="container mt-5">
-    <div class="row justify-content-center">
-
-        <div class="col-md-6 col-lg-8 mb-4">
-            <!-- New Company Card -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-body text-center">
-                    <h5 class="card-title">
-                        <NavLink href="create-company" force-load="true" class="text-decoration-none">
-                            <span class="bi bi-plus-circle fs-2 mb-3 d-block"></span> New Company
-                        </NavLink>
-                    </h5>
-                    <p class="card-text">Start listing your company on our platform</p>
+<AuthorizeView Roles="Admin, User, Manager, Supplier">
+    <Authorized Context="outerContext">
+        
+        <section class="mb-4">
+            <div class="alert alert d-flex align-items-center">
+                <span class="bi bi-person-circle fs-3 me-3 text-primary"></span>
+                <div>
+                    <p class="mb-0"><strong>Signed in as</strong>: @userName</p>
+                    <p class="mb-0"><strong>Email:</strong> @userEmail</p>
+                    <p class="mb-0"><strong>Role:</strong> @userRole</p>
                 </div>
             </div>
+        </section>
 
-            <!-- New Supplier Card -->
-            <div class="card shadow-sm">
-                <div class="card-body text-center">
-                    <h5 class="card-title">
-                        <NavLink href="create-supplier" force-load="true" class="text-decoration-none">
-                            <span class="bi bi-plus-circle fs-2 mb-3 d-block"></span> New Supplier
-                        </NavLink>
-                    </h5>
-                    <p class="card-text">Propose your supplier services here</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card position-relative" style="padding: 1rem;">
-                <div class="card-body text-center">
-                    <span class="bi bi-clock-history fs-4 mb-3 d-block"></span>
-                    <h5 class="card-title fs-5">Your Order History</h5>
-                    <p class="card-text fs-6">Manage and view all your orders</p>
 
-                    @* notification badge *@
-                    @if (OrderService.OrderCount > 0)
+
+        @* supplier view *@
+        <AuthorizeView Roles="Admin, Supplier" Context="supplierContext">
+        <section class="mb-4">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="home-tab" data-bs-toggle="tab" href="profile/#home" role="tab"
+                        aria-controls="home" aria-selected="true">Your Supplier Page</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="orders-tab" data-bs-toggle="tab" href="profile/#orders" role="tab"
+                        aria-controls="orders" aria-selected="false">Orders</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                    @if (supplier == null)
                     {
-                        <span
-                            class="badge position-absolute top-0 end-0 translate-middle badge-notification bg-danger fs-6">
-                            @OrderService.OrderCount
-                        </span>
+                        <p class="alert alert-primary">You have not registered your supplier services yet</p>
+                        <div class="card shadow-sm">
+                            <div class="card-body text-center">
+                                <h4 class="card-title">
+                                    <NavLink href="create-supplier" force-load="true" class="text-decoration-none">
+                                        <span class="bi bi-plus-circle fs-2 mb-3 d-block"></span> New Supplier
+                                    </NavLink>
+                                </h4>
+                                <p class="card-text">Propose your supplier services here</p>
+                            </div>
+                        </div>
                     }
+                    else
+                    {
+                        <div class="card rounded-3 mb-5 border-0">
+                            <div class="card-header bg-white border-bottom-0 d-flex align-items-center">
+                                <img src="img/@supplier.SupplierLogo" alt="@supplier.SupplierName Logo" class="me-3 rounded"
+                                    style="width: 60px; height: 60px; object-fit: contain;" />
+                                <div>
+                                    <h3 class="mb-0">@supplier.SupplierName</h3>
+                                    <small class="text-muted">@supplier.Category.Category_description</small>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <NavLink href="@($"/edit-supplier/{supplier.SupplierId}")"
+                                    class="btn btn-sm mt-3 modifyBtn">
+                                <i class="fas fa-edit"></i> Modify
+                                </NavLink>
+                            </div>
 
-                    <NavLink href="/history" class="btn btn-primary w-100 mt-4 fs-6">
-                        <span class="bi bi-arrow-right-circle"></span> View Order History
-                    </NavLink>
+                            <div class="card-body pt-0">
+                                <hr />
+
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <p class="mb-2"><i
+                                                class="bi bi-telephone-fill text-primary me-2"></i><strong>Phone:</strong>
+                                            @supplier.SupplierPhone</p>
+                                        <p class="mb-2"><i
+                                                class="bi bi-envelope-fill text-primary me-2"></i><strong>Email:</strong>
+                                            @supplier.SupplierEmail</p>
+                                        <p class="mb-2"><i
+                                                class="bi bi-geo-alt-fill text-primary me-2"></i><strong>Address:</strong>
+                                            @supplier.SupplierAddress</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="mb-2"><i
+                                                class="bi bi-info-circle-fill text-primary me-2"></i><strong>Description:</strong>
+                                            @supplier.SupplierDescription</p>
+                                        <p class="mb-2"><i
+                                                class="bi bi-tag-fill text-primary me-2"></i><strong>Category:</strong>
+                                            @supplier.Category?.Category_name</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+
+                <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
+                    @if (supplierOrders != null && supplierOrders.Any())
+                    {
+                        <div class="row g-3">
+                            @foreach (var order in supplierOrders.OrderBy(o => o.OrderId))
+                            {
+                                <div class="col-12 col-md-6 col-lg-4">
+                                    <div class="card h-100 shadow-sm border-1 mt-4">
+                                        <div class="card-body">
+                                            <h4 class="card-title orderTitle"><i class="bi bi-cart-plus-fill"></i> Order
+                                                    #@order.OrderId</h4>
+                                            <p class="mb-1"><strong>Amount:</strong> $@order.OrderAmount</p>
+                                            <p class="mb-1"><strong>Address:</strong> @order.OrderAddress1 @order.OrderAddress2</p>
+                                            <p class="mb-1"><strong>City and Zip Code:</strong> @order.OrderCity @order.OrderZip</p>
+                                            <p class="mb-1"><strong>Country:</strong> @order.OrderCountry</p>
+                                            <p class="mb-1"><strong>Placed By:</strong> @order!.User!.UserFname
+                                                @order.User.UserLastName</p>
+                                            <p><strong>Status:</strong> @GetOrderStatusText(order.OrderStatus)</p>
+
+                                        <label for="@order.OrderId" class="form-label fw-bold">Update Order Status:</label>
+                                        <select id="@order.OrderId" class="form-select form-select-sm"
+                                            @onchange="(e) => ChangeOrderStatus(order.OrderId, int.Parse(e.Value.ToString()))"
+                                            >
+                                            <option value="1" selected="@(order.OrderStatus == 1 ? "selected" : "")">
+                                                Pending</option>
+                                            <option value="2" selected="@(order.OrderStatus == 2 ? "selected" : "")">
+                                                Approved</option>
+                                            <option value="3" selected="@(order.OrderStatus == 3 ? "selected" : "")">
+                                                Shipped</option>
+                                            <option value="4" selected="@(order.OrderStatus == 4 ? "selected" : "")">
+                                                Completed</option>
+                                            <option value="5" selected="@(order.OrderStatus == 5 ? "selected" : "")">
+                                                Canceled</option>
+                                        </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else if (supplierOrders != null) // case where there are no orders
+                    {
+                        <p class="alert alert-primary">No orders found.</p>
+                    }
+                    else // case where supplierOrders is null
+                    {
+                        <p>Loading orders...</p>
+                    }
                 </div>
             </div>
-        </div>
+        </section>
+        </AuthorizeView>
+        
+        @* manager view *@
+        <AuthorizeView Roles="Admin, Manager" Context="managerContext">
+            <section>     
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="manager-tab" data-bs-toggle="tab" data-bs-target="#manager"
+                            type="button" role="tab" aria-controls="manager" aria-selected="true">
+                            Your Company Page
+                        </button>
+                    </li>
+                </ul>
 
-    </div>
-</section>
+                <div class="tab-content" id="managerTabContent">
+                    <div class="tab-pane fade show active" id="manager" role="tabpanel" aria-labelledby="manager-tab">
+                        @if (company == null){
+                        <p class="alert alert-primary">You have not listed your company yet</p>
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-body text-center">
+                                <h3 class="card-title">
+                                    <NavLink href="create-company" force-load="true" class="text-decoration-none">
+                                    <span class="bi bi-plus-circle fs-2 mb-3 d-block"></span> New Company
+                                    </NavLink>
+                                </h3>
+                                <p class="card-text">Start listing your company on our platform</p>
+                            </div>
+                        </div>
+                        }
+                        else {
+                            <div class="card shadow-sm rounded-lg mb-4">
+                            <div class="card-header">
+                                <h3>About @company.Company_name</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>📞 Phone:</strong> @company.Company_phone</p>
+                                        <p><strong>✉️ Email:</strong> @company.Company_email</p>
+                                        <p><strong>📍 Address:</strong> @company.Company_address</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>ℹ️ Description:</strong>
+                                        @(string.IsNullOrEmpty(company.Company_description) ? "No description available" : company.Company_description)</p>
+                                        <p>🌍
+                                        <a href="@($"/company/{company.Company_id}")">
+                                            <strong> Link to your page</strong>
+                                            <i class="bi bi-arrow-right-square-fill mb-1"></i>
+                                        </a></p>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </section>
+        </AuthorizeView>
+
+
+        <AuthorizeView Roles="Admin, Manager, Supplier, User" Context="userContext">
+        <section class="mt-5 ">
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-6 mb-4">
+                    <div class="card position-relative shadow-sm historyCard pb-5">
+                        <div class="text-center">
+                            <div class="card-header">
+                            <span class="bi bi-clock-history"></span>
+                            Your Order History</div>
+                            <h4 class="card-title fs-5 mt-3">Review Your Purchases & Quotes</h4>
+                            <p class="card-text fs-6">View and track all your active and past orders and quotes</p>
+
+                            @* notification badge *@
+                            @if (OrderService.OrderCount > 0)
+                            {
+                                <span
+                                    class="badge position-absolute top-0 end-0 translate-middle badge-notification bg-danger fs-6">
+                                    @OrderService.OrderCount
+                                </span>
+                            }
+
+                            <NavLink href="/history" class="btn btn-primary">
+                                <span class="bi bi-arrow-right-circle"></span> View Order History
+                            </NavLink>
+                        </div>
+                    </div>
+                </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="card infoCard mb-3">
+                            <div class="card-header">Need Help?</div>
+                            <div class="card-body d-flex flex-column flex-lg-row align-items-center">
+                                <div class="mb-3 mb-lg-0 flex-shrink-0">
+                                    <img src="img/undraw_got-an-idea.svg" alt="Help" class="help-image card-img-top"
+                                        style="max-width: 200px;" />
+                                </div>
+
+                                <div class="ms-lg-4 text-center text-lg-start">
+                                    <h5 class="card-title mb-3">Find the Answers You Need</h5>
+                                    <p class="card-text mb-3">Visit our documentation for assistance</p>
+                                    <NavLink href="/documentation" class="btn btnInfo btn-primary">
+                                        <span class="bi bi-arrow-right-circle me-2"></span>  Documentation
+                                    </NavLink>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+            </div>
+        </section>
+        </AuthorizeView>
+
     </Authorized>
     <NotAuthorized>
-        <Redirect></Redirect>
+        <h3>You will be redirected to the login page</h3>
     </NotAuthorized>
 </AuthorizeView>
 
 @code {
     private int userId;
-    private string userRole;
+    private string? userRole;
+    private string? userEmail;
+    private string? userName;
 
-    // Initialize the profile page by loading order count
+    private Supplier? supplier;
+    private Company? company;
+    private List<NewOrder> supplierOrders = new List<NewOrder>();
+
+    private string GetOrderStatusText(int status)
+    {
+        return status switch
+        {
+            1 => "Pending",
+            2 => "Approved",
+            3 => "Shipped",
+            4 => "Completed",
+            5 => "Canceled",
+            _ => "Unknown"
+        };
+    }
+
     protected override async Task OnInitializedAsync()
     {
 
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        if (user.Identity.IsAuthenticated)
+        if (user.Identity != null && user.Identity.IsAuthenticated)
         {
-            userId = Convert.ToInt32(user.FindFirst(c => c.Type == "UserId")?.Value);
-            userRole = user.FindFirst(c => c.Type == ClaimTypes.Role)?.Value;
+            userId = Convert.ToInt32(user.FindFirst(c => c.Type == "UserId")?.Value ?? "0"); 
+            userRole = user.FindFirst(c => c.Type == ClaimTypes.Role)?.Value ?? "User";
+            userEmail = user.FindFirst(c => c.Type == ClaimTypes.Email)?.Value ?? "N/A";
+            userName = user.Identity.Name ?? "Unknown";
+        }
+        else
+        {
+            userId = 0;
+            userRole = "User";
         }
 
-        await OrderService.LoadOrderCount(userId); // load the active order count
+        // supplier profile
+        if(userRole == "Supplier")
+        {
+            supplier = await SupplierService.GetSupplierByUserIdAsync(userId);
+
+            // if a supplier is found fetch the orders
+            if (supplier != null)
+            {
+                supplierOrders = await OrderService.GetOrdersBySupplierIdAsync(supplier.SupplierId);
+                supplierOrders = supplierOrders.OrderBy(order => order.OrderId).ToList();
+
+            }
+        }
+
+        // manager profile
+        else if (userRole == "Manager")
+        {
+            company = await CompanyService.GetCompanyByUserIdAsync(userId);
+        }
+        else
+        {
+            await OrderService.LoadOrderCount(userId); // load the active order count
+        }
+
         OrderService.OnChange += StateHasChanged; // re render the component when order count changes
     }
+    
 
     // Dispose the event when the component is destroyed
     public void Dispose()
@@ -101,7 +354,7 @@
     // Method to get the badge class based on the order count
     private string GetOrderHistoryBadgeClass()
     {
-        // change class based on the order count 
+        // change class based on the order count
         if (OrderService.OrderCount == 0)
         {
             return "bg-secondary"; // no orders
@@ -112,4 +365,48 @@
         }
 
     }
+    
+    private async Task ChangeOrderStatus(int orderId, int newStatus)
+    {
+        try
+        {
+            // call OrderService to update the order status
+            var result = await OrderService.UpdateOrderStatus(orderId, newStatus);
+
+            if (result)
+            {
+                // refresh the orders list
+                supplierOrders = await OrderService.GetOrdersBySupplierIdAsync(supplier!.SupplierId);
+                StateHasChanged(); // re-render to update the UI
+            }
+            else
+            {
+                // handle any errors here
+                Console.WriteLine("Error updating order status");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+    }
+
+    private bool isRedirecting = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !isRedirecting)
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            // if the user is not authenticated redirect to the login page
+            if (!user.Identity?.IsAuthenticated ?? true)
+            {
+                isRedirecting = true;
+                Navigation.NavigateTo("/login");
+            }
+        }
+    }
+
 }
