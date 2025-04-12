@@ -219,12 +219,15 @@ h1:focus {
 }
 
 .login:hover {
-    background-color: #58af71;
+    background-color: #349c51;
 }
 
 .btn-outline-info {
     color: white;
-    border: solid 1px #3b7471;
+    border: solid 1px #349c51;
+    padding: .7rem;
+    border-radius: 6px;
+
 }
 .btn-outline-info:active:focus {
     color: white;
@@ -232,7 +235,7 @@ h1:focus {
 }
 
 .btn-outline-info:hover {
-    background-color: #58af71;
+    background-color: #349c51;
     color: white;
     border: solid 1px #58af71;
 }
