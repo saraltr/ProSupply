@@ -10,7 +10,7 @@
 
 
 <h3>Create Supplier</h3>
-
+<div class="supplier-form">
 <EditForm Model="@Supplier" OnValidSubmit="HandleValidSubmit" FormName="SupplierForm">
     <DataAnnotationsValidator />
     <ValidationSummary />
@@ -75,6 +75,7 @@
 
     <button type="submit" class="btn btn-primary">Create</button>
 </EditForm>
+</div>
 
 @code {
 

@@ -1,5 +1,9 @@
 @page "/protected"
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.EntityFrameworkCore
+@using Models
+@using CSE_325_group_project.Data
+@inject AppDbContext _dbContext
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
@@ -7,7 +11,78 @@
 
 <AuthorizeView Roles="Admin">
     <Authorized>
-        <h3>Welcome to the Admin Dashboard</h3>
+        <h3>Admin Dashboard</h3>
+
+        @if (!string.IsNullOrEmpty(alertMessage))
+        {
+            <div class="alert @(alertIsSuccess ? "alert-success" : "alert-danger") alert-dismissible fade show"
+                role="alert">
+                @alertMessage
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (users != null)
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th># ID</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Username</th>
+                            <th>User Level</th>
+                            <th>Nb of Orders</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in users)
+                        {
+                            <tr>
+                                <th>@user.User_id</th>
+                                <td>@user.UserFname</td>
+                                <td>@user.UserLastName</td>
+                                <td>@user.Username</td>
+                                <td>@user.UserLevel</td>
+                                <td>@(orderCount.ContainsKey(user.User_id) ? orderCount[user.User_id] : 0)</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" @onclick="() => StartEditing(user)"><i class="bi bi-pencil-square"></i>Edit</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (isEditing && editingUser != null)
+            {
+                <div class="card mt-4">
+                    <div class="card-header">Edit User Info</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">First Name</label>
+                            <input class="form-control" @bind="editingUser.UserFname" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Last Name</label>
+                            <input class="form-control" @bind="editingUser.UserLastName" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input class="form-control" @bind="editingUser.Username" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">User Level</label>
+                            <input class="form-control" type="number" @bind="editingUser.UserLevel" />
+                        </div>
+                        <button class="btn btn-success me-2" @onclick="SaveUserChanges">Save</button>
+                        <button class="btn btn-secondary" @onclick="CancelEditing">Cancel</button>
+                    </div>
+                </div>
+            }
+        }
     </Authorized>
     <NotAuthorized>
         <h3>You will be redirected to the login page</h3>
@@ -17,6 +92,33 @@
 @code {
     private bool isRedirecting = false;
 
+    // list of users and orders
+    private List<User>? users;
+    private List<NewOrder>? orders;
+
+    // dictionary to store order counts by user
+    private Dictionary<int, int> orderCount = new();
+
+    // editing state and temp user object
+    private User? editingUser;
+    private bool isEditing = false;
+
+    private string alertMessage = "";
+    private bool alertIsSuccess = true;
+
+    // load data when component initializes
+    protected override async Task OnInitializedAsync()
+    {
+        users = await _dbContext.Users.ToListAsync();
+        orders = await _dbContext.NewOrder.ToListAsync();
+
+        // count orders per user
+        orderCount = orders
+        .GroupBy(o => o.UserId)
+        .ToDictionary(g => g.Key, g => g.Count());
+    }
+
+    // redirect unauthenticated users to login
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && !isRedirecting)
@@ -24,12 +126,79 @@
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             var user = authState.User;
 
-            // If the user is not authenticated, redirect to the login page
+            // Redirect if not authenticated
             if (!user.Identity?.IsAuthenticated ?? true)
             {
                 isRedirecting = true;
                 NavigationManager.NavigateTo("/login");
             }
         }
+    }
+
+    // copy user data into a temporary object
+    private void StartEditing(User user)
+    {
+        editingUser = new User
+        {
+            User_id = user.User_id,
+            Username = user.Username,
+            UserFname = user.UserFname,
+            UserLastName = user.UserLastName,
+            UserEmail = user.UserEmail,
+            UserPassword = user.UserPassword,
+            UserLevel = user.UserLevel
+        };
+        isEditing = true;
+        alertMessage = "";
+    }
+
+    // save changes made to a user
+    private async Task SaveUserChanges()
+    {
+        if (editingUser == null) return;
+
+        try
+        {
+            var userToUpdate = await _dbContext.Users.FindAsync(editingUser.User_id);
+            if (userToUpdate != null)
+            {
+                // update the different fields
+                userToUpdate.UserFname = editingUser.UserFname;
+                userToUpdate.UserLastName = editingUser.UserLastName;
+                userToUpdate.Username = editingUser.Username;
+                userToUpdate.UserLevel = editingUser.UserLevel;
+
+                await _dbContext.SaveChangesAsync();
+                users = await _dbContext.Users.ToListAsync();
+
+                // show success message
+                alertMessage = "User updated successfully!";
+                alertIsSuccess = true;
+            }
+            else
+            {
+                // user not found
+                alertMessage = "User not found.";
+                alertIsSuccess = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            // error during update
+            alertMessage = $"Update failed: {ex.Message}";
+            alertIsSuccess = false;
+        }
+
+        // reset editing state
+        isEditing = false;
+        editingUser = null;
+    }
+
+    // cancel edit mode
+    private void CancelEditing()
+    {
+        isEditing = false;
+        editingUser = null;
+        alertMessage = "";
     }
 }

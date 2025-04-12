@@ -318,7 +318,7 @@
         }
 
         // supplier profile
-        if(userRole == "Supplier")
+        if(user.IsInRole("Admin") || user.IsInRole("Supplier"))
         {
             supplier = await SupplierService.GetSupplierByUserIdAsync(userId);
 
@@ -332,15 +332,12 @@
         }
 
         // manager profile
-        else if (userRole == "Manager")
+        if (user.IsInRole("Admin") || user.IsInRole("Manager"))
         {
             company = await CompanyService.GetCompanyByUserIdAsync(userId);
         }
-        else
-        {
-            await OrderService.LoadOrderCount(userId); // load the active order count
-        }
 
+        await OrderService.LoadOrderCount(userId);
         OrderService.OnChange += StateHasChanged; // re render the component when order count changes
     }
     

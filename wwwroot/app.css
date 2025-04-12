@@ -625,7 +625,7 @@ h1:focus {
     min-height: 100vh;
 }
 
-.company-form form {
+.company-form form, .supplier-form form {
     max-width: 600px;
     margin: auto;
     padding: 2rem;
