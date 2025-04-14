@@ -1,4 +1,5 @@
 using CSE_325_group_project.Data;
+using CSE_325_group_project.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -45,4 +46,49 @@ public class OrderService
         // if there are any subscribers to the OnChange event change the UI
         OnChange?.Invoke();
     }
+    // fetch all orders for a specific supplier by supplier_id
+    public async Task<List<NewOrder>> GetOrdersBySupplierIdAsync(int supplierId)
+    {
+        // create a new scope to resolve services like DbContext for database access
+        using var scope = _scopeFactory.CreateScope();
+        // retrieve an instance of the AppDbContext from the scope (which represents the database context)
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        // get all orders for the supplier with the given supplier_id
+        var orders = await dbContext.NewOrder
+            .Where(o => o.SupplierId == supplierId)
+            .Include(o => o.User)
+            .ToListAsync();
+
+        return orders;
+    }
+
+    public async Task<bool> UpdateOrderStatus(int orderId, int newStatus)
+    {
+        using (var scope = _scopeFactory.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            var order = await dbContext.NewOrder.FindAsync(orderId);
+            if (order == null)
+            {
+                return false; // Order not found
+            }
+
+            // Update the order status
+            order.OrderStatus = newStatus;
+
+            try
+            {
+                // Save changes to the database
+                await dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false; // Handle any errors
+            }
+        }
+    }
+
 }

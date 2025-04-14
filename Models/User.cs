@@ -11,19 +11,19 @@ namespace CSE_325_group_project.Models
         [Column("user_id")]
         public int User_id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Username is required.")]
         [Column("username")]
         public string Username { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "First Name is required.")]
         [Column("user_fname")]
         public string UserFname { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Last Name is required.")]
         [Column("user_lastname")]
         public string UserLastName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Email required.")]
         [Column("user_email")]
         public string UserEmail { get; set; }
 

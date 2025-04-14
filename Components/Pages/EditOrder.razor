@@ -10,8 +10,6 @@
 
 <PageTitle>Edit Your Order</PageTitle>
 
-<h3>Edit Order</h3>
-
 @if (order == null)
 {
     <p>Order not found.</p>
@@ -24,13 +22,18 @@ else
             <strong>Success!</strong> Your order has been updated successfully.
         </div>
     }
-    <EditForm Model="order" OnValidSubmit="SaveChanges" FormName="EditForm">
+    <EditForm Model="order" OnValidSubmit="SaveChanges" FormName="EditForm" class="editForm shadow-sm">
         <DataAnnotationsValidator />
-        <ValidationSummary />
-        
+
+        <fieldset>
+            <legend>
+                <h3>Edit Order</h3>
+            </legend>
+    
         <div class="mb-3">
             <label for="address1"><strong>Shipping Address Line 1</strong></label>
             <InputText id="address1" class="form-control" @bind-Value="order.OrderAddress1" />
+            <ValidationMessage For="@(() => order.OrderAddress1)" />
         </div>
 
         <div class="mb-3">
@@ -41,11 +44,15 @@ else
         <div class="mb-3">
             <label for="city"><strong>City</strong></label>
             <InputText  id="city" class="form-control" @bind-Value="order.OrderCity"  />
+            <ValidationMessage For="@(() => order.OrderCity)" />
+
         </div>
 
         <div class="mb-3">
             <label for="zip"><strong>Zip Code</strong></label>
             <InputText id="zip" class="form-control" @bind-Value="order.OrderZip" />
+            <ValidationMessage For="@(() => order.OrderZip)" />
+
         </div>
 
         <div class="mb-3">
@@ -53,10 +60,13 @@ else
             <InputText id="notes" class="form-control" rows="3" placeholder="Type your instructions here..."
             @bind-Value="order.OrderNotes" />
         </div>
-
-        <button type="submit" class="btn btn-success">Save Changes</button>
-        <button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancel Modifications</button>
-        <button type="button" class="btn btn-danger" @onclick="DeleteOrder"><i class="bi bi-trash"></i> Delete Order</button>
+        <div class="text-center">
+            <button type="submit" class="btn btn-success">Save Changes</button>
+            <button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancel Modifications</button>
+            <button type="button" class="btn btn-danger" @onclick="DeleteOrder"><i class="bi bi-trash"></i> Delete Order</button>
+        </div>
+        
+        </fieldset>
     </EditForm>
 }
 

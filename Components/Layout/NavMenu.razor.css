@@ -24,6 +24,10 @@
     margin-left: 0.2rem;
 }
 
+.sidebar {
+    z-index: 2;
+}
+
 .navbar-brand h1:hover .supply {
     color: #A4B8A1;
 }
@@ -57,12 +61,24 @@
 }
 
 .sidebar-modern .badge {
-    background-color: red;
-    color: white;
+    background-color: #f4f0f0;
+    color: black;
     font-size: 0.75rem;
-    padding: 0.2rem 0.6rem;
+    padding: 0.3rem 0.6rem;
     border-radius: 12px;
     margin-left: auto;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
 /* Icons */

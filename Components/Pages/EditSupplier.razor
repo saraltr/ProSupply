@@ -1,0 +1,307 @@
+@page "/edit-supplier/{supplierId:int}/"
+@using CSE_325_group_project.Models
+@using CSE_325_group_project.Data
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.Forms
+@inject AppDbContext _dbContext
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@rendermode RenderMode.InteractiveServer
+
+<PageTitle>Edit Your Supplier Services</PageTitle>
+
+@if (supplier == null)
+{
+    <p>No services found.</p>
+}
+else
+{
+    @if (isSuccess)
+    {
+        <div class="alert alert-success">
+            <p class="m-0"><strong>Success!</strong> Your services were updated successfully.</p>
+        </div>
+    }
+    if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger">
+            <p class="m-0"><strong>An error has occurred:</strong> @errorMessage</p>
+        </div>
+    }
+
+<EditForm Model="@supplier" OnValidSubmit="SaveChanges" FormName="EditSupplierForm" class="editSupplierForm">
+    <DataAnnotationsValidator />
+
+    <div class="row m-2">
+        <div class="col-12 col-lg-6">
+            <section>
+                <fieldset>
+                    <legend><h3>Edit Your Supplier Page</h3></legend>
+
+                    <div>
+                        <label for="supplierName">Supplier Name</label>
+                        <InputText id="supplierName" class="form-control" @bind-Value="supplier.SupplierName" />
+                        <ValidationMessage For="@(() => supplier.SupplierName)" />
+                    </div>
+
+                    <div>
+                        <label for="supplierEmail">Email</label>
+                        <input type="email" id="supplierEmail" class="form-control" @bind-value="supplier.SupplierEmail" />
+                        <ValidationMessage For="@(() => supplier.SupplierEmail)" />
+                    </div>
+
+                    <div>
+                        <label for="supplierPhone">Phone number</label>
+                        <InputText id="supplierPhone" class="form-control" @bind-Value="supplier.SupplierPhone" />
+                        <ValidationMessage For="@(() => supplier.SupplierPhone)" />
+                    </div>
+
+                    <div>
+                        <label for="supplierAddress">Address</label>
+                        <InputText id="supplierAddress" class="form-control" @bind-Value="supplier.SupplierAddress" />
+                        <ValidationMessage For="@(() => supplier.SupplierAddress)" />
+                    </div>
+
+                    <div>
+                        <label for="supplierDesc">Business Description</label>
+                        <InputTextArea id="supplierDesc" class="form-control" @bind-Value="supplier.SupplierDescription" />
+                        <ValidationMessage For="@(() => supplier.SupplierDescription)" />
+                    </div>
+                    <div class="addService">
+                        @if (!string.IsNullOrEmpty(serviceErrorMessage))
+                        {
+                            <div class="alert alert-danger mt-2">
+                                <p class="m-0"><strong>Error!</strong> @serviceErrorMessage</p>
+                            </div>
+                        }
+                        @if (isAddingNewService)
+                        {
+                            <div class="border p-3 rounded mb-3 shadow-lg">
+                                <div class="mb-2">
+                                    <label for="newServiceName">New Service Name</label>
+                                    <InputText id="newServiceName" class="form-control" @bind-Value="newService.ServiceName" aria-required="true"/>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label for="newServiceDesc">Description</label>
+                                    <InputTextArea id="newServiceDesc" class="form-control"
+                                            @bind-Value="newService.ServiceDescription" aria-required="true" />
+                                </div>
+
+                                <div class="mb-2">
+                                    <label for="newServicePrice">Price</label>
+                                    <InputNumber id="newServicePrice" class="form-control"
+                                            @bind-Value="newService.ServicePrice" aria-required="true" />
+                                </div>
+
+                                <div class="d-flex justify-content-end">
+                                    <button class="btn btn-success me-2" @onclick="SaveNewService">Add</button>
+                                    <button class="btn btn-secondary"
+                                        @onclick="() => isAddingNewService = false">Cancel</button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </fieldset>
+            </section>
+
+                <div class="mt-4 text-center mb-4">
+                    <button type="submit" class="btn btn-success m-1 me-2">Save Changes</button>
+                    <button type="button" class="btn btn-secondary m-1 me-2" @onclick="CancelEdit">Cancel Modifications</button>
+                    @if (!isAddingNewService)
+                    {
+                        <button type="button" class="btn btn-primary m-1 serviceBtn" @onclick="() => isAddingNewService = true">Add New
+                            Service</button>
+                    }
+                </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+            <section>
+                <fieldset>
+                    <legend><h3>Your Listed Services</h3></legend>
+
+                    @if (supplier.Services == null)
+                    {
+                        <p>No services listed yet</p>
+                    }
+
+                    @foreach (var service in supplier.Services)
+                    {
+                        var inputId = $"serviceName_{service.ServiceId}";
+                        var descId = $"serviceDesc_{service.ServiceId}";
+                        var priceId = $"servicePrice_{service.ServiceId}";
+
+                        <div class="d-flex align-items-center mb-3 servicesCard">
+                            <div class="flex-grow-1">
+                                <label for="@inputId">Service Name</label>
+                                <InputText id="@inputId" class="form-control" @bind-Value="service.ServiceName" placeholder="Service Name" aria-required="true" />
+
+                                <label for="@descId">Service Description</label>
+                                <InputTextArea id="@descId" class="form-control mt-2" @bind-Value="service.ServiceDescription" placeholder="Service Description" aria-required="true"/>
+
+                                <label for="@priceId">Service Price</label>
+                                <InputNumber id="@priceId" class="form-control mt-2" @bind-Value="service.ServicePrice" placeholder="Service Price" aria-required="true"/>
+
+                                <div class="mt-4 text-center">
+                                    <button class="btn btn-danger "@onclick="() => RemoveService(service.ServiceId)">Remove</button>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    }
+                </fieldset>
+            </section>
+        </div>
+    </div>
+</EditForm>
+}
+
+@code {
+    // gets the supplierId from the url
+    [Parameter] public int supplierId { get; set; }
+    private Supplier? supplier;
+    private bool isSuccess = false;
+    private string errorMessage = string.Empty;
+    private string serviceErrorMessage = string.Empty;
+
+
+    private Service newService = new Service
+    {
+        ServiceName = string.Empty,
+        ServiceDescription = string.Empty,
+        ServicePrice = 0
+    };
+
+    private bool isAddingNewService = false;
+
+    // this method runs when the component is initialized 
+    // it retrieves the order from the database based on the passed orderId
+    protected override async Task OnInitializedAsync()
+    {
+        supplier = await _dbContext.Suppliers
+        .Include(s => s.Services)
+        .FirstOrDefaultAsync(s => s.SupplierId == supplierId);
+
+        // if the order is found, mark the entry as modified to track changes
+        if (supplier != null)
+        {
+            _dbContext.Entry(supplier).State = EntityState.Modified;
+        }
+    }
+
+    // this method is called when the form is submitted to save the changes
+    private async Task SaveChanges()
+    {
+        if (supplier != null)
+        {
+            try
+            {
+                // reset success flag before any changes
+                isSuccess = false;
+                // apply the changes to the database
+                _dbContext.Suppliers.Update(supplier);
+
+                // if the user modifies the services list
+                foreach (var service in supplier.Services)
+                {
+                    // if the service is not already in the database (has an ID of 0)
+                    if (service.ServiceId == 0)
+                    {
+                        _dbContext.Services.Add(service); // add new service
+                        isSuccess = true;
+                        StateHasChanged();
+                        await Task.Delay(5000);
+                    }
+                    else
+                    {
+                        _dbContext.Services.Update(service); // or update service
+                        isSuccess = true;
+                        StateHasChanged();
+                        await Task.Delay(5000);
+                    }
+                }
+
+                // show success msg
+                StateHasChanged();
+                await Task.Delay(5000); // the message will be displayed for 5 seconds
+                // save the changes
+                await _dbContext.SaveChangesAsync();
+
+                // hide success message after the delay
+                isSuccess = false;
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                // display the error message
+                errorMessage = $"An error occurred while saving the changes: {ex.Message}. Please try again later.";
+                StateHasChanged();
+
+                await Task.Delay(5000); // removes error message after 5 seconds
+                errorMessage = string.Empty;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private void SaveNewService()
+    {
+        if (supplier != null)
+        {
+            // reset the error message
+            serviceErrorMessage = string.Empty;
+
+            // validate the new service fields
+            if (string.IsNullOrWhiteSpace(newService.ServiceName) ||
+            string.IsNullOrWhiteSpace(newService.ServiceDescription) ||
+            newService.ServicePrice <= 0)
+            {
+                // set an error message if validation fails
+                serviceErrorMessage = "Please fill in all fields correctly: Service Name, Description, and Price must be provided.";
+                isSuccess = false;
+                StateHasChanged();
+                return; // don't add the service if validation fails
+            }
+
+            StateHasChanged();
+
+            // add the new service to the db
+            newService.SupplierId = supplier.SupplierId;
+            supplier.Services.Add(newService);
+
+            // reset the new service fields
+            newService = new Service
+            {
+                ServiceName = string.Empty,
+                ServiceDescription = string.Empty,
+                ServicePrice = 0
+            };
+
+            // hide the form for adding a new service
+            isAddingNewService = false;
+        }
+    }
+
+    private async Task RemoveService(int serviceId)
+    {
+        // show the confirmation dialog
+        var confirmDelete = await JS.InvokeAsync<bool>("confirm", "Are you sure you want to remove this service?");
+
+        if (confirmDelete)
+        {
+            var serviceToRemove = supplier?.Services.FirstOrDefault(s => s.ServiceId == serviceId);
+
+            if (serviceToRemove != null)
+            {
+                supplier!.Services.Remove(serviceToRemove);
+                StateHasChanged();
+            }
+        }
+    }
+
+    private void CancelEdit()
+    {
+        Navigation.NavigateTo($"/profile");
+    }
+}

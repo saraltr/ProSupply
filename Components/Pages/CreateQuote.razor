@@ -23,20 +23,23 @@
 }
 else
 {
-        <h3 class="text-center mt-4 mb-4">
-            Request a Quote from @supplier.SupplierName
-        </h3>
 
 
-    <EditForm Model="Quote" OnValidSubmit="SubmitQuote">
+            <EditForm Model="Quote" OnValidSubmit="SubmitQuote" FormName="CreateQuoteForm" class="newQuoteForm">
         <DataAnnotationsValidator />
         <ValidationSummary />
+        <fieldset>
+            <legend>
+                <h3 class="text-center mb-4">
+                    Request a Quote from @supplier.SupplierName
+                </h3>
+            </legend>
 
         <div class="form-group">
             <label for="serviceDescription" class="form-label">
                 <strong>Service Description</strong>
             </label>
-            <textarea id="serviceDescription" class="form-control" @bind="Quote.QuoteDetails"
+            <textarea id="serviceDescription" class="form-control" @bind="Quote!.QuoteDetails"
                 placeholder="Describe your requirements here" rows="4"></textarea>
         </div>
 
@@ -49,8 +52,9 @@ else
         </div>
 
         <div class="form-group text-center mt-4">
-            <button type="submit" class="btn btn-primary btn-lg">Request a Quote</button>
+                <button type="submit" class=" signUp btn-lg">Request a Quote</button>
         </div>
+        </fieldset>
     </EditForm>
 
 }

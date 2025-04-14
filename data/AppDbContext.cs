@@ -34,6 +34,7 @@ namespace CSE_325_group_project.Data
                 entity.Property(c => c.Company_description).HasMaxLength(100);
                 entity.Property(c => c.Img_url).HasMaxLength(100);
                 entity.Property(c => c.Industry_id).IsRequired();
+                entity.Property(c => c.Industry_id).IsRequired();
                 entity.Property(c => c.User_id).IsRequired();
             });
 
@@ -47,7 +48,7 @@ namespace CSE_325_group_project.Data
                 entity.Property(s => s.SupplierPhone).IsRequired().HasMaxLength(45);
                 entity.Property(s => s.SupplierEmail).IsRequired().HasMaxLength(45);
                 entity.Property(s => s.SupplierAddress).IsRequired().HasMaxLength(45);
-                entity.Property(s => s.SupplierDescription).IsRequired().HasMaxLength(200);
+                entity.Property(s => s.SupplierDescription).IsRequired().HasMaxLength(230);
                 entity.Property(s => s.SupplierLogo).IsRequired();
 
                 entity.HasOne(s => s.Company)
@@ -83,11 +84,16 @@ namespace CSE_325_group_project.Data
                     .IsRequired()
                     .HasMaxLength(50);
                 entity.Property(o => o.OrderNotes).HasMaxLength(250);
-                entity.Property(o => o.SupplierId).IsRequired();
+                entity.Property(o => o.SupplierId)
+                .HasColumnName("supplier_id")
+                .IsRequired();
+
+
                 entity.Property(o => o.UserId).IsRequired();
                 entity.HasOne(o => o.Supplier)
                       .WithMany()
                       .HasForeignKey(o => o.SupplierId)
+                      .HasConstraintName("FK_Order_Supplier")
                       .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(o => o.User)

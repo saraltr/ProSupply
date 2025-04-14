@@ -7,11 +7,25 @@
 @inject ILogger<SupplierForm> Logger
 @inject HttpClient Http
 @inject AppDbContext _dbContext
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 
 <h3>Create Supplier</h3>
-
+<div class="supplier-form">
 <EditForm Model="@Supplier" OnValidSubmit="HandleValidSubmit" FormName="SupplierForm">
+    @if (!string.IsNullOrEmpty(successMessage))
+    {
+        <div class="alert alert-success" role="alert">
+            @successMessage
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @errorMessage
+        </div>
+    }
     <DataAnnotationsValidator />
     <ValidationSummary />
 
@@ -41,6 +55,11 @@
     </div>
 
     <div class="form-group">
+        <label for="supplierLogo">Your Logo</label>
+        <InputFile id="supplierLogo" OnChange="HandleFileSelected" />
+    </div>
+
+    <div class="form-group">
         <label>Category</label>
         <InputSelect @bind-Value="Supplier!.CategoryId" class="form-control" required>
             <option value="">-- Select Category --</option>
@@ -52,11 +71,6 @@
                 }
             }
         </InputSelect>
-    </div>
-
-    <div class="form-group">
-        <label>User ID</label>
-        <InputNumber @bind-Value="Supplier!.UserId" class="form-control" required />
     </div>
 
     <div class="form-group">
@@ -75,36 +89,104 @@
 
     <button type="submit" class="btn btn-primary">Create</button>
 </EditForm>
+</div>
 
 @code {
-
 
     [SupplyParameterFromForm]
     private Supplier? Supplier { get; set; }
 
-     protected override void OnInitialized() 
-      { 
-       
+    // stores the name of the uploaded file after saving
+    private string? uploadedFileName;
+    private int userId;
+
+    // reference to the file selected by the user
+    IBrowserFile? file;
+    private List<Company>? companies;
+    private List<Category>? categories;
     
-  
-      }
-    //private Supplier supplier = new Supplier();
-    private List<Company> companies;
-    private List<Category> categories;
+    // success and error messages
+    private string? successMessage;
+    private string? errorMessage;
+
 
     // Load Companies and Categories
+    // extracts the logged-in user's ID from authentication claims
     protected override async Task OnInitializedAsync()
     {
         Supplier ??= new() {};
+
+        // load companies and categories for dropdown selections
         companies = await _dbContext.Companies.ToListAsync();
         categories = await _dbContext.Categories.ToListAsync();
-    }
 
+        // get the current authentication state and extract user ID from claims
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authenticationState.User;
+
+        var userIdString = user.FindFirst("UserId")?.Value;
+
+        if (int.TryParse(userIdString, out int parsedUserId))
+        {
+            userId = parsedUserId;
+        }
+    }
+    
+    // called when the form is submitted and passes validation
     private async Task HandleValidSubmit()
     {
+        try
+        {
+
+        if (file == null)
+        {
+            errorMessage = "Please upload a logo before submitting.";
+            successMessage = null;
+            StateHasChanged();
+            return;
+        }
+
+        // set supplier logo path (to be stored in DB) using the file name
+        Supplier!.SupplierLogo = Path.Combine("suppliers", file!.Name).Replace("\\", "/");
+
+        Supplier.UserId = userId;
+
         _dbContext.Suppliers.Add(Supplier);
         await _dbContext.SaveChangesAsync();
-        
-        //Navigation.NavigateTo("/supplier-list");
+
+        // save to directory
+        var path = Path.Combine("wwwroot/uploads/suppliers", file.Name);
+
+        // ensure the uploads folder exists
+        Directory.CreateDirectory("wwwroot/uploads");
+
+        using var stream = new FileStream(path, FileMode.Create);
+        await file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024).CopyToAsync(stream); // 10 MB max
+
+        uploadedFileName = file.Name;
+        successMessage = $"Supplier '{Supplier.SupplierName}' created successfully.";
+        errorMessage = null;
+
+        // clear form after successful submission (optional)
+        Supplier = new();
+        file = null;
+
+        Navigation.NavigateTo("/profile");
+
+        }
+        catch (Exception)
+        {
+            errorMessage = "An error occurred while creating the supplier. Please try again.";
+            successMessage = null;
+        }
+        StateHasChanged();
     }
+
+    // called when the user selects a file
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        file = e.File;
+        errorMessage = null; 
+    }
+
 }

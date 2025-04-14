@@ -5,6 +5,7 @@
     background-position: center;
     padding: 10rem;
     z-index: -2;
+    background-color: black;
 }
 
 .background-image-container::before {

@@ -14,32 +14,32 @@ namespace CSE_325_group_project.Models
         [Column("category_id")]
         public int CategoryId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Supplier Name Required")]
         [StringLength(45)]
         [Column("supplier_name")]
         public string SupplierName { get; set; }
 
-        [Required]
-        [StringLength(45)]
+        [Required(ErrorMessage = "Phone number required")]
+        [StringLength(15, MinimumLength = 7, ErrorMessage = "Phone number must be between 7 and 15 characters.")]
         [Column("supplier_phone")]
         public string SupplierPhone { get; set; }
 
-        [Required]
-        [StringLength(45)]
+        [Required(ErrorMessage = "Phone email required")]
+        [StringLength(45, ErrorMessage = "Email must be at most 45 characters long")]
+        [EmailAddress(ErrorMessage = "Invalid email address")]
         [Column("supplier_email")]
         public string SupplierEmail { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Address required")]
         [StringLength(45)]
         [Column("supplier_address")]
         public string SupplierAddress { get; set; }
 
-        [Required]
-        [StringLength(200)]
+        [Required(ErrorMessage = "Description required")]
+        [StringLength(230)]
         [Column("supplier_description")]
         public string SupplierDescription { get; set; }
 
-        [Required]
         [Column("supplier_logo")]
         public string SupplierLogo { get; set; }
 
@@ -65,7 +65,6 @@ namespace CSE_325_group_project.Models
 
         public Supplier() { }
 
-        // ✅ Constructor to initialize required fields
         public Supplier(
             int supplierId, 
             int categoryId, 
