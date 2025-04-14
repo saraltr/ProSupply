@@ -19,7 +19,7 @@ namespace CSE_325_group_project.Models
         [Column("order_amount")]
         public decimal OrderAmount { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Order Address required")]
         [StringLength(255)]
         [Column("order_address1")]
         public string OrderAddress1 { get; set; }
@@ -28,17 +28,17 @@ namespace CSE_325_group_project.Models
         [Column("order_address2")]
         public string? OrderAddress2 { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Order City required")]
         [StringLength(100)]
         [Column("order_city")]
         public string OrderCity { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Order Zip Code required")]
         [StringLength(20)]
         [Column("order_zip")]
         public string OrderZip { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Order Country required")]
         [StringLength(50)]
         [Column("order_country")]
         public string OrderCountry { get; set; }

@@ -243,6 +243,20 @@ h1:focus {
 
 /* HomePage.css */
 
+.suppliersCard i {
+    color: #1f476e;
+}
+
+.suppliersCard .btn-outline-primary {
+    border-color: #1f476e;
+    color: #1f476e;
+}
+
+.suppliersCard .btn-outline-primary:hover {
+    background-color: #1f476e;
+    color: white;
+}
+
 .hero-section {
     background: linear-gradient(to right, #e0f2fe, #ffffff);
     padding: 4rem 2rem;
@@ -670,4 +684,37 @@ select:focus,
 textarea:focus {
     border-color: #007bff;
     outline: none;
+}
+
+/* edit order page */
+.editForm, .quoteEdit, .newQuoteForm {
+    background: linear-gradient(135deg, #2c3e50, #2f5780);
+    color: white;
+    border-radius: .5rem;
+    margin: 0 auto;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.newQuoteForm label {
+    color:  white;
+}
+
+/* documentation page */
+.card-img-top {
+    width: 100%;
+    height: auto;
+    max-height: 700px;
+    object-fit:scale-down;
+}
+
+.small-card {
+    font-size: 0.875rem;
+    min-height: 100%;
+    transition: all 0.2s ease-in-out;
+}
+
+.small-card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
 }

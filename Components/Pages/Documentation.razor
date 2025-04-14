@@ -1,0 +1,402 @@
+@page "/documentation"
+@using CSE_325_group_project.Components.Layout
+@rendermode InteractiveServer
+
+<PageTitle>Documentation</PageTitle>
+
+<section class="container mt-5">
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3 class="card-title">Your Supplier Profile</h3>
+            <p class="card-text">
+                Your Supplier Profile is your supplier business's public-facing page on our platform. It showcases your services, company details, and contact information to potential clients. From your profile you can manage your <strong>listed services, update your business information, and track orders placed by your clients.</strong> Keeping this profile up to date helps attract more clients and build trust. Use the documentation below to navigate your profile.
+            </p>
+            <p class="card-text"><small class="text-muted">Last updated @LastUpdated.ToString("MMMM dd, yyyy")</small></p>
+        </div>
+
+
+    <div class="card accordion m-2">
+        <div class="">
+            <button class="accordion-button collapsed fw-bold bg-light " type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseProfile" aria-expanded="false" aria-controls="collapseProfile">
+                Set Up Your Supplier Profile
+            </button>
+        </div>
+        <div id="collapseProfile" class="collapse">
+        <div class="container p-4">
+            <h4 class="mb-4">Getting Started with Your Supplier Profile</h4>
+            <p class="lead">Once registered for our <strong>Premium Membership</strong>, you'll gain access to your <strong>Supplier Profile.</strong> From there, you can register your supplier business and services by completing <strong>your supplier form</strong>.
+            </p>
+            <div class="row text-center row-cols-1 row-cols-md-2 g-4 mt-4">
+                <div class="col">
+                    <div class="card h-100 border-0">
+                        <div class="card-body">
+                            <h5 class="card-title">Step 1: Update Your Profile</h5>
+                            <p class="card-text">Your <strong>Supplier Profile</strong> is what clients will see. Keep
+                                it accurate and attractive.</p>
+                            <img src="/docu/supplier-profile.png" class="img-fluid rounded my-3 border" alt="Supplier Profile Preview">
+                            <p class="card-text">This is a preview of how your profile appears to future clients.</p>
+                            <img src="/docu/supplier-profile2.png" class="img-fluid rounded my-3 border" alt="Supplier Profile Details">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card h-100 border-0">
+                        <div class="card-body">
+                            <h5 class="card-title">Step 2: Complete the Supplier Form</h5>
+                            <p class="card-text">Fill out the form to <strong>register your supplier business and services</strong>. Include your contact info, service categories, and pricing.</p>
+                            <img src="/docu/supplier-form.png" class="img-fluid rounded my-3 border" alt="Supplier Form">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        </div>
+    </div>
+
+    <div class="card accordion m-2">
+        <div class="accordion-item shadow-sm border-0 rounded">
+            <div class="">
+                <button class="accordion-button collapsed fw-bold bg-light " type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseServices" aria-expanded="false" aria-controls="collapseServices">
+                Service Management
+                </button>
+            </div>
+            <div id="collapseServices" class="accordion-collapse collapse" aria-labelledby="headingServices">
+                <div class="accordion-body bg-light">
+                    <div class="container">
+                        <div class="row g-4">
+
+                            <div class="col-md-6">
+                                <h4 class="mb-2">Edit Your Profile</h4>
+                                <img src="/docu/supplier-form2.png" class="img-fluid rounded border mb-3"
+                                    alt="supplier edit form">
+                                <p>To make changes, click the <strong>'Modify'</strong> button in your Supplier Profile. This opens the edit form
+                                    where you can
+                                    update your business information and manage your listed services.</p>
+                            </div>
+
+                            <div class="col-md-6">
+                                <h4 class="mb-2">New Service Form</h4>
+                                <img src="/docu/supplier-addService.png" class="img-fluid rounded border mb-3"
+                                    alt="supplier service form">
+                            </div>
+                        </div>
+
+                        <div class="card mt-4 shadow-sm border-0">
+                            <div class="card-header bg-white fw-semibold">
+                                How to List Your Services
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-3">Follow these steps to manage your services:</p>
+                                <ol class="list-group list-group-numbered">
+                                    <li class="list-group-item">
+                                        <strong>Step 1: Add a New Service</strong><br>
+                                        Click the <em>'Modify'</em> button in your Supplier Profile to open the form. Enter your service name,
+                                        description, and pricing.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Step 2: Edit an Existing Service</strong><br>
+                                        Choose the service you'd like to change, update the details, and save your
+                                        edits.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Step 3: Delete a Service</strong><br>
+                                        Use the <em>'Delete'</em> option next to any service you wish to remove.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Step 4: Save Your Changes</strong><br>
+                                        Don’t forget to hit the <em>'Submit'</em> button to finalize and apply your
+                                        updates.
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card accordion m-2">
+        <div class="">
+            <button class="accordion-button collapsed fw-bold bg-light " type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseOrders" aria-expanded="false" aria-controls="collapseOrders">
+                Manage Your Orders
+            </button>
+        </div>
+        <div id="collapseOrders" class="collapse">
+            <div class="container p-4">
+            <h4 class="mb-4">How to Manage Your Orders</h4>
+            <p class="lead">Once your clients place an order, you can view it under the <strong>Orders</strong> tab of your profile. Here's how to manage your orders:</p>
+            
+            <div class="row text-center row-cols-1 row-cols-md-2 g-4 mt-4">
+                <div class="col">
+                    <div class="card h-100 border-0">
+                        <div class="card-body">
+                            <h5 class="card-title">View Your Orders</h5>
+                            <p class="card-text">Your orders will be available for viewing in the <strong>Orders</strong> tab of your profile.</p>
+                            <img src="/docu/supplier-order1.png" class="img-fluid rounded border mb-3" alt="supplier order view">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card h-100 border-0">
+                        <div class="card-body">
+                            <h5 class="card-title">Update Order Status</h5>
+                            <p class="card-text">You can <strong>manage the status of your orders</strong> by clicking the drop-down menu and selecting the current order status.</p>
+                            <img src="/docu/supplier-order2.png" class="img-fluid rounded border mb-3" alt="supplier order status">
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+</section>
+
+<section class="container mt-5">
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3 class="card-title">Basic Membership User Guide</h3>
+            <p class="card-text">
+                As a <strong>Basic Membership user</strong>, you can browse supplier listings, place orders, and request
+                quotes from suppliers for services offered on our platform. From your <strong>profile</strong>, you can
+                access your placed <strong>orders and quotes</strong>, modify them, add notes, or cancel them. You can
+                also explore our listing of businesses, from specialized suppliers to larger companies, each offering
+                different services.
+            </p>
+            <p class="card-text"><small class="text-muted">Last updated April 12, 2025</small></p>
+        </div>
+
+        <div class="card accordion m-2">
+            <button class="accordion-button collapsed fw-bold bg-light" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseBasicProfile" aria-expanded="false" aria-controls="collapseBasicProfile">
+                Explore Your Profile & Access Your History
+            </button>
+
+            <div id="collapseBasicProfile" class="accordion-collapse collapse">
+                <div class="accordion-body bg-light">
+                <div class="container p-3">
+                    <div class="row mb-4">
+                        <div class="col-md-6 d-flex flex-column justify-content-center">
+                            <h4>Your Profile & History</h4>
+                            <p>From your profile, you can view your <strong>account information</strong> including your user role. You’ll also have access to your full <strong><a href="/history">order and quote history</a>.</strong></p>
+                        </div>
+                        <div class="col-md-6">
+                            <img src="/docu/user-profile.png" class="img-fluid rounded border"
+                                alt="User profile screen">
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <img src="/docu/active-history.png" class="img-fluid rounded border"
+                                alt="Active orders/quotes">
+                        </div>
+                        <div class="col-md-6 d-flex flex-column justify-content-center">
+                            <p><strong>Active Orders and Quotes:</strong> This section displays all current orders and
+                                quote requests that are still in progress or under review.</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 d-flex flex-column justify-content-center">
+                            <p><strong>Past Orders and Quotes:</strong> Here you can view all completed or canceled
+                                requests, giving you a clear record of your service history.</p>
+                        </div>
+                        <div class="col-md-6">
+                            <img src="/docu/past-history.png" class="img-fluid rounded border" alt="Past history">
+                        </div>
+                    </div>
+                </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="card accordion m-2">
+            <button class="accordion-button collapsed fw-bold bg-light" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapsePlacingOrder" aria-expanded="false" aria-controls="collapsePlacingOrder">
+                Placing an Order or Quote
+            </button>
+
+            <div id="collapsePlacingOrder" class="accordion-collapse collapse">
+                <div class="accordion-body bg-light">
+                <div class="container p-3">
+                    <div class="row mb-4">
+                        <div class="col-md-6 d-flex flex-column justify-content-center">
+                            <h4 class="mt-0">Place Your Order or Quote</h4>
+                            <p>To order from a supplier, go to their listed profile by browsing our <a
+                                    href="/suppliers">Suppliers Directory</a>.</p>
+                            <p>In each supplier's profile, you’ll see a list of available services. You can
+                                <strong>place an order</strong> directly or <strong>request a quote</strong>.</p>
+                        </div>
+                        <div class="col-md-6">
+                            <img src="/docu/supplier-page.png" class="img-fluid rounded border"
+                                alt="Supplier page preview">
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <img src="/docu/order-form.png" class="img-fluid rounded border" alt="Order form">
+                        </div>
+                        <div class="col-md-6 d-flex flex-column justify-content-center">
+                            <p><strong>Order Form:</strong> Select your desired service, add any specific details, and
+                                provide an order delivery address.</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6 d-flex flex-column justify-content-center">
+                            <p><strong>Quote Form:</strong> Use this if your request requires a custom quote. Add a
+                                service description and any relevant notes for the supplier.</p>
+                        </div>
+                        <div class="col-md-6">
+                            <img src="/docu/quote-form.png" class="img-fluid rounded border" alt="Quote form">
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-12">
+                           <div class="row no-gutters bg-light position-relative">
+                            <div class="col-md-6 mb-md-0 p-md-4">
+                                    <img src="/docu/order-confirmation.png" class="img-fluid rounded border mb-3" alt="Order confirmation">
+                            </div>
+                                <div class="col-md-6 position-static p-4 pl-md-0">
+                                    <h4 class="mt-0">Confirmation Page</h4>
+                                    <p>Once your order or quote is submitted, you’ll be redirected to a
+                                        <strong>confirmation page</strong> displaying all the details. You can track the status, modify, or cancel it from that same page.</p>
+                                    <img src="/docu/quote-confirmation.png" class="img-fluid rounded border" alt="Quote confirmation">
+                                </div>
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div class="card accordion m-2">
+            <button class="accordion-button collapsed fw-bold bg-light" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseTracking" aria-expanded="false" aria-controls="collapseTracking">
+                Manage & Track Your Orders and Quotes
+            </button>
+
+            <div id="collapseTracking" class="accordion-collapse collapse">
+            <div class="accordion-body bg-light">
+                <div class="container py-4">
+
+                    <div class="row mb-5">
+                        <div class="col">
+                            <div class="card shadow-sm border-0">
+                                <div class="card-header bg-white fw-semibold fs-5">
+                                    Manage Your Orders and Quotes
+                                </div>
+                                <div class="card-body">
+                                    <p class="mb-3">
+                                        From your confirmation page or profile history, you can easily take action on
+                                        your orders and quotes. Here's how:
+                                    </p>
+                                    <ol class="list-group list-group-numbered">
+                                        <li class="list-group-item">
+                                            Track status updates: <strong>Pending</strong>, <strong>Approved</strong>,
+                                            <strong>Shipped</strong>, <strong>Completed</strong>, or
+                                            <strong>Canceled</strong>.
+                                        </li>
+                                        <li class="list-group-item">
+                                            Use the <strong>Modify</strong> button to update order or quote details.
+                                        </li>
+                                        <li class="list-group-item">
+                                            Add notes or clarifications for the supplier directly from the form.
+                                        </li>
+                                        <li class="list-group-item">
+                                            Cancel or delete an order or quote. It will then be moved to your past
+                                            history.
+                                        </li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row row-cols-1 row-cols-md-2 g-4 mb-5">
+                        <div class="col text-center">
+                            <img src="/docu/order-approved.png" class="img-fluid rounded border"
+                                style="max-height: 600px;" alt="Order Approved">
+                            <p class="text-muted mt-2 small">Status: <strong>Approved</strong></p>
+                        </div>
+                        <div class="col text-center">
+                            <img src="/docu/order-shipped.png" class="img-fluid rounded border"
+                                style="max-height: 600px;" alt="Order Shipped">
+                            <p class="text-muted mt-2 small">Status: <strong>Shipped</strong></p>
+                        </div>
+                        <div class="col text-center">
+                            <img src="/docu/complete-status.png" class="img-fluid rounded border"
+                                style="max-height: 600px;" alt="Order Completed">
+                            <p class="text-muted mt-2 small">Status: <strong>Completed</strong></p>
+                        </div>
+                        <div class="col text-center">
+                            <img src="/docu/order-canceled.png" class="img-fluid rounded border"
+                                style="max-height: 600px;" alt="Order Canceled">
+                            <p class="text-muted mt-2 small">Status: <strong>Canceled</strong></p>
+                        </div>
+                    </div>
+
+                    <div class="container my-5"></div>
+                    <h4 class="mb-4 fw-semibold">Modify Your Submission</h4>
+                    <div class="row g-4 justify-content-center">
+
+                        <div class="col-12 col-md-6">
+                        <div class="card h-100 text-center border-0 shadow-sm">
+                            <img src="/docu/edit-order.png" class="card-img-top p-3" alt="Edit Order Form">
+                            <div class="card-body">
+                            <h6 class="fw-semibold">Modify an Order</h6>
+                            <p class="text-muted small">Update order details or notes before final confirmation.</p>
+                            </div>
+                        </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <div class="card text-center border-0 shadow-sm">
+                                <img src="/docu/edit-quote.png" class="card-img-top p-3"  alt="Edit Quote Form">
+                                <div class="card-body">
+                                <h6 class="fw-semibold">Modify a Quote</h6>
+                                <p class="text-muted small">Add clarifications, or request changes.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+@code {
+    private DateTime LastUpdated = DateTime.Now.AddDays(-3).AddMinutes(15);
+
+    private string GetRelativeTime(DateTime dateTime)
+    {
+        var span = DateTime.Now - dateTime;
+
+        if (span.TotalMinutes < 1)
+            return "just now";
+        if (span.TotalMinutes < 60)
+            return $"{(int)span.TotalMinutes} minutes ago";
+        if (span.TotalHours < 24)
+            return $"{(int)span.TotalHours} hours ago";
+        if (span.TotalDays < 7)
+            return $"{(int)span.TotalDays} days ago";
+
+        return dateTime.ToString("MMMM dd, yyyy");
+    }
+}

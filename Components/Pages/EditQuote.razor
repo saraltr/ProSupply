@@ -10,8 +10,6 @@
 
 <PageTitle>Edit Your Quote</PageTitle>
 
-<h3>Edit Quote</h3>
-
 @if (quote == null)
 {
     <p>Quote not found.</p>
@@ -24,9 +22,13 @@ else
             <strong>Success!</strong> Your quote has been updated successfully.
         </div>
     }
-    <EditForm Model="quote" OnValidSubmit="SaveChanges" FormName="EditQuote">
+    <EditForm Model="quote" OnValidSubmit="SaveChanges" FormName="EditQuote" class="quoteEdit">
         <DataAnnotationsValidator />
         <ValidationSummary />
+        <fieldset>
+            <legend>
+                <h3>Edit Quote</h3>
+            </legend>
 
         <div class="mb-3">
             <label for="serviceDescription"><strong>Service Description</strong></label>
@@ -39,10 +41,13 @@ else
             <InputText id="quoteNotes" class="form-control" @bind-Value="quote.QuoteNotes" />
         </div>
 
-        <button type="submit" class="btn btn-success">Save Changes</button>
+        <div class="text-center">
+            <button type="submit" class="btn btn-success">Save Changes</button>
         <button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancel Modifications</button>
         <button type="button" class="btn btn-danger" @onclick="DeleteOrder"><i class="bi bi-trash"></i> Delete
             Order</button>
+        </div>
+        </fieldset>
     </EditForm>
 }
 
