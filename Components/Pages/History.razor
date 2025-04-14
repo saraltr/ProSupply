@@ -11,6 +11,8 @@
 
 <PageTitle>Order History</PageTitle>
 
+<AuthorizeView>
+    <Authorized>
 <div class="container mt-5">
     <h3 class="text-center mb-4">Your Order History</h3>
 
@@ -150,6 +152,11 @@
         }
     }
 </div>
+    </Authorized>
+    <NotAuthorized>
+        <p>You must be logged in to view this page. You'll be redirected.</p>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     private List<NewOrder>? userOrders;
@@ -227,5 +234,22 @@
             5 => "bg-danger", // Canceled
             _ => "bg-secondary" // Unknown
         };
+    }
+    private bool isRedirecting = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !isRedirecting)
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            // if the user is not authenticated redirect to the login page
+            if (!user.Identity?.IsAuthenticated ?? true)
+            {
+                isRedirecting = true;
+                Navigation.NavigateTo("/login");
+            }
+        }
     }
 }

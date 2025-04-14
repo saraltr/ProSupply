@@ -11,7 +11,6 @@
             <p class="card-text">
                 Your Supplier Profile is your supplier business's public-facing page on our platform. It showcases your services, company details, and contact information to potential clients. From your profile you can manage your <strong>listed services, update your business information, and track orders placed by your clients.</strong> Keeping this profile up to date helps attract more clients and build trust. Use the documentation below to navigate your profile.
             </p>
-            <p class="card-text"><small class="text-muted">Last updated @LastUpdated.ToString("MMMM dd, yyyy")</small></p>
         </div>
 
 
@@ -171,7 +170,6 @@
                 also explore our listing of businesses, from specialized suppliers to larger companies, each offering
                 different services.
             </p>
-            <p class="card-text"><small class="text-muted">Last updated April 12, 2025</small></p>
         </div>
 
         <div class="card accordion m-2">
@@ -380,23 +378,129 @@
     </div>
 </section>
 
+<section class="container mt-5">
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3 class="card-title">Companies User Guide</h3>
+            <p class="card-text">
+                Learn how to navigate and interact with company listings on ProSupply. Your available features depend on
+                your login status and assigned user role.
+            </p>
+        </div>
 
-@code {
-    private DateTime LastUpdated = DateTime.Now.AddDays(-3).AddMinutes(15);
+        <div class="card accordion m-2">
+            <button class="accordion-button collapsed fw-bold bg-light" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseGuest" aria-expanded="false" aria-controls="collapseGuest">
+                Guest Users – (Not Registered or Logged In)
+            </button>
 
-    private string GetRelativeTime(DateTime dateTime)
-    {
-        var span = DateTime.Now - dateTime;
+            <div id="collapseGuest" class="accordion-collapse collapse">
+                <div class="accordion-body bg-light">
+                    <div class="container p-3">
+                    <p>If you are not registered or logged in, you can:</p>
+                        <ul>
+                            <li>View the full list of companies.</li>
+                            <li>Search companies by name using the search bar..</li>
+                            <li>Filter companies by industry using the dropdown.</li>
+                            <li>Click <strong>"More Info"</strong> to view detailed information about each company, such as contact details, description, and industry.
+                            </li>
+                        </ul>
+                        <p class="text-muted"><strong>Note:</strong> Guests have read-only access to company data.</p>
+                        <img src="/docu/companies-list.png" class="img-fluid rounded border mt-3" alt="Companies List">
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        if (span.TotalMinutes < 1)
-            return "just now";
-        if (span.TotalMinutes < 60)
-            return $"{(int)span.TotalMinutes} minutes ago";
-        if (span.TotalHours < 24)
-            return $"{(int)span.TotalHours} hours ago";
-        if (span.TotalDays < 7)
-            return $"{(int)span.TotalDays} days ago";
+        <div class="card accordion m-2">
+            <button class="accordion-button collapsed fw-bold bg-light" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseRegistered" aria-expanded="false" aria-controls="collapseRegistered">
+                Registered & Logged-In Users
+            </button>
 
-        return dateTime.ToString("MMMM dd, yyyy");
-    }
-}
+            <div id="collapseRegistered" class="accordion-collapse collapse">
+                <div class="accordion-body bg-light">
+                    <div class="container p-3">
+                        <p>Once you're logged in, your access level will depend on your assigned role:</p>
+
+                        <h5 class="mt-4">Admin Users</h5>
+                        <ul>
+                            <li>Edit any company's information.</li>
+                            <li>Delete any company from the list.</li>
+                        </ul>
+
+                        <h5 class="mt-4">Manager Users</h5>
+                        <ul>
+                            <li>Edit and update only the company you're assigned to manage.</li>
+                            <li>You cannot delete companies or make changes to companies that are not assigned to you.</li>
+                        </ul>
+
+                        <img src="/docu/edit-company.png" class="img-fluid rounded border mt-3" alt="Edit Company Form">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card accordion m-2">
+            <button class="accordion-button collapsed fw-bold bg-light" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseAccessTable" aria-expanded="false" aria-controls="collapseAccessTable">
+                Feature Access Overview by Role
+            </button>
+
+            <div id="collapseAccessTable" class="accordion-collapse collapse">
+                <div class="accordion-body bg-light">
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-center align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Guest</th>
+                                    <th>Registered</th>
+                                    <th>Manager</th>
+                                    <th>Admin</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>View company list</td>
+                                    <td>✔️</td>
+                                    <td>✔️</td>
+                                    <td>✔️</td>
+                                    <td>✔️</td>
+                                </tr>
+                                <tr>
+                                    <td>Search & filter companies</td>
+                                    <td>✔️</td>
+                                    <td>✔️</td>
+                                    <td>✔️</td>
+                                    <td>✔️</td>
+                                </tr>
+                                <tr>
+                                    <td>View company details</td>
+                                    <td>✔️</td>
+                                    <td>✔️</td>
+                                    <td>✔️</td>
+                                    <td>✔️</td>
+                                </tr>
+                                <tr>
+                                    <td>Edit company information</td>
+                                    <td>❌</td>
+                                    <td>❌</td>
+                                    <td>✔️ (Assigned only)</td>
+                                    <td>✔️</td>
+                                </tr>
+                                <tr>
+                                    <td>Delete a company</td>
+                                    <td>❌</td>
+                                    <td>❌</td>
+                                    <td>❌</td>
+                                    <td>✔️</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
