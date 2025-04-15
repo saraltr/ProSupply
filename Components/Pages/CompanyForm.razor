@@ -7,6 +7,7 @@
 @inject ILogger<CompanyForm> Logger
 @inject HttpClient Http
 @inject AppDbContext _dbContext
+@inject NavigationManager Navigation
 @using Microsoft.AspNetCore.Components.Authorization
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
@@ -41,9 +42,10 @@
     </div>
 
     <div class="form-group">
-        <label for="CompanyDescription">Description</label>
-        <InputText id="CompanyDescription" class="form-control" @bind-Value="Company!.Company_description" />
-    </div>
+    <label for="CompanyDescription">Description</label>
+    <InputTextArea id="CompanyDescription" class="form-control" @bind-Value="Company!.Company_description" rows="5" />
+        <ValidationMessage For="@(() => Company.Company_description)" />
+</div>
 
 
 
@@ -73,7 +75,13 @@
 
    
 
-    <button type="submit" class="btn btn-primary">Create</button>
+<button type="submit" class="btn btn-primary" disabled="@isSubmitting">
+    @(isSubmitting ? "Submitting..." : "Submit")
+</button>
+    @if (isSubmitting)
+{
+    <div class="alert alert-info mt-3">@submitMessage</div>
+}
 </EditForm>
 </div>
 
@@ -91,6 +99,9 @@
     private int userId;
     private List<Industry> industries = new ();
     private List<Industry> fetchedIndustries = new ();
+
+    private bool isSubmitting = false;
+    private string submitMessage = "";
 
 
     protected override async Task OnInitializedAsync()
@@ -115,29 +126,45 @@
       }
     
 
-    private async void HandleValidSubmit()
+    private async Task HandleValidSubmit()
+{
+    isSubmitting = true;
+    submitMessage = "Submitting company info, please wait...";
+    StateHasChanged();
+
+    try
     {
-        // Your form submission logic
         Company.Img_url = Path.Combine("uploads", file.Name).Replace("\\", "/");
         Company.User_id = userId;
 
         _dbContext.Companies.Add(Company);
-        await _dbContext.SaveChangesAsync(); 
+        await _dbContext.SaveChangesAsync();
 
-        // Optional: Save to disk
         var path = Path.Combine("wwwroot/uploads", file.Name);
-
-        // Ensure the uploads folder exists
         Directory.CreateDirectory("wwwroot/uploads");
 
         using var stream = new FileStream(path, FileMode.Create);
-        await file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024).CopyToAsync(stream); // 10 MB max
+        await file.OpenReadStream(maxAllowedSize: 100 * 1024 * 1024).CopyToAsync(stream); // Increased to 100 MB max
 
         uploadedFileName = file.Name;
-        
 
+        submitMessage = "Company successfully created!";
+        StateHasChanged();
+
+        await Task.Delay(1000); // Optional pause before redirect
+        Navigation.NavigateTo("/companies");
     }
-
+    catch (Exception ex)
+    {
+        submitMessage = $"An error occurred: {ex.Message}";
+        Console.WriteLine(ex);
+    }
+    finally
+    {
+        isSubmitting = false;
+        StateHasChanged();
+    }
+}
     
 
     private async Task HandleFileSelected(InputFileChangeEventArgs e)
@@ -153,4 +180,3 @@
 
 
     
-}

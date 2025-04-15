@@ -10,9 +10,11 @@
 @inject NavigationManager Navigation
 @using Microsoft.AspNetCore.Components.Authorization
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@using System.Text.Json;
 
 
 @rendermode RenderMode.InteractiveServer //helps to rerender after input changed
+
 
 <div class="company-form">
  <EditForm Model="@Company" OnValidSubmit="HandleSubmit" FormName="EditCompanyForm">
@@ -49,12 +51,11 @@
                    @bind-Value="Company.Company_address" />
     </div>
 
-    <div class="form-group">
-        <label for="CompanyDescription">Description</label>
-        <InputText id="CompanyDescription" 
-                    class="form-control"
-                    @bind-Value="Company.Company_description" />
-    </div>
+   <div class="form-group">
+    <label for="CompanyDescription">Description</label>
+    <InputTextArea id="CompanyDescription" class="form-control" @bind-Value="Company.Company_description" rows="5" />
+    <ValidationMessage For="@(() => Company.Company_description)" />
+</div>
 
 <div class="form-group">
         <label for="ImgUrl">ImgUrl</label>
@@ -69,7 +70,7 @@
             <p>Uploaded file: @uploadedFileName</p>
         }
 
-     <div class="form-group">
+    <div class="form-group">
     <label for="IndustrySelect">Industry</label>
     <select id="IndustrySelect" class="form-control" @bind="Company!.Industry_id">
         <option value="">-- Please choose --</option>
@@ -82,7 +83,15 @@
 
    
 
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary" disabled="@isSubmitting">
+    @(isSubmitting ? "Submitting..." : "Submit")
+</button>
+@if (isSubmitting)
+{
+    <div class="alert alert-info mt-3">
+        <span>@submitMessage</span>
+    </div>
+}
 </EditForm>
 </div>
 
@@ -98,20 +107,15 @@
     private List<Industry> industries = new ();
     private List<Industry> fetchedIndustries = new ();
    
-
+    private bool isSubmitting = false;
+    private string submitMessage = "";
     private int userId;
 
-   // private Company? CompanyEdit { get; set; }
-    // Simulating fetching data from a service or database
+   
     protected override async Task OnInitializedAsync()
     {
        
-        // Here you would typically fetch the company data using the id
-   
-        // For example, calling a service like: await CompanyService.GetCompanyByIdAsync(id);
-        Company ??= new() {Company_name = "Initial"};
-       // CompanyEdit ??=new() {};
-        // Simulating fetching company data
+        Company ??= new() {};
         Company  = await GetCompanyByIdAsync(id);
 
         fetchedIndustries = await _dbContext.Industries.ToListAsync();
@@ -130,54 +134,69 @@
                
     }
 
-    // Simulate fetching company data based on the id
+    
     private async Task<Company?> GetCompanyByIdAsync(string id)
     {
 
         Company company = await _dbContext.Companies.FirstOrDefaultAsync(c => c.Company_id == int.Parse(id));
-        // This is where you would fetch from a real API or database
-       
-
         return company;
     }
 
-    private async Task HandleSubmit(){
+    private async Task HandleSubmit()
+{
+    isSubmitting = true;
+    submitMessage = "Uploading and saving company info, please wait...";
+    StateHasChanged(); // Update UI with message
 
-         
+    try
+    {
+        var c = JsonSerializer.Serialize(Company);  
 
+        if (file != null)
+        {
+            Company.Img_url = Path.Combine("uploads", file.Name).Replace("\\", "/");
+            var path = Path.Combine("wwwroot/uploads", file.Name);
 
-        Company.Img_url = Path.Combine("uploads", file.Name).Replace("\\", "/");
-        Company.User_id = userId;
+            if (File.Exists(path))
+            {
+                Console.WriteLine("File already exists!");
+            }
+            else
+            {
+                Directory.CreateDirectory("wwwroot/uploads");
 
-        
-
-        // Optional: Save to disk
-        var path = Path.Combine("wwwroot/uploads", file.Name);
-
-        // Ensure the uploads folder exists
-        Directory.CreateDirectory("wwwroot/uploads");
-
-        using var stream = new FileStream(path, FileMode.Create);
-        await file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024).CopyToAsync(stream); // 10 MB max
-        uploadedFileName = file.Name;
-        //companyFileName = uploadedFileName;
-        StateHasChanged();
+                using var stream = new FileStream(path, FileMode.Create);
+                await file.OpenReadStream(maxAllowedSize: 100 * 1024 * 1024).CopyToAsync(stream);
+            }
+        }
 
         _dbContext.Companies.Update(Company);
         await _dbContext.SaveChangesAsync();
+
         Console.WriteLine($"Company Info Updated: Name: {Company.Company_name}, Email: {Company.Company_email}, Address: {Company.Company_address}");
-        
-        
-        Navigation.NavigateTo("/companies");
+        submitMessage = "Update complete. Redirecting...";
         StateHasChanged();
-        
-        
+
+        await Task.Delay(1000); // Optional: slight pause to show completion message
+        Navigation.NavigateTo("/companies");
     }
+    catch (Exception ex)
+    {
+        submitMessage = $"An error occurred: {ex.Message}";
+        Console.WriteLine(ex);
+    }
+    finally
+    {
+        isSubmitting = false;
+        StateHasChanged();
+    }
+}
 
      private async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
         file = e.File;
         companyFileName = file.Name;
+        
         
     }
     

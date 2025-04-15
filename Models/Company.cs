@@ -28,6 +28,8 @@ public class Company
     public  string? Company_address { get; set; }
 
     [Column ("company_description")]
+    [StringLength(450,ErrorMessage = "Your text is too long.")]
+
     public string? Company_description { get; set; } 
 
     [Column ("img_url")]

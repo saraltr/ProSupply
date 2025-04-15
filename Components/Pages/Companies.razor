@@ -13,18 +13,22 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 <PageTitle>Companies</PageTitle>
-<div>
-    <SearchBar OnSearch="PerformSearch" />
-</div>
+<div  class="d-flex align-items-end gap-3 mb-4" style="flex-wrap: wrap;">
 
-@* <div>
-    <FilterComponent     TItem="Industry"
-                 Label="Filter by Industry"
-                 Items="@industries"
-                 GetId="ind => ind.Industry_id"
-                 GetName="ind => ind.Industry_Name"
-                 OnSelectedChanged="OnIndustrySelected"/>
-</div> *@
+<SearchBar OnSearch="PerformSearch" />
+
+
+<div class="filter-component mb-3" style="width: 40%;">
+    <label for="industryFilter" class="form-label fw-bold">Filter by Industry</label>
+    <select id="industryFilter" class="form-select"  @bind=@SelectedIndustryId>
+        <option value="">-- Please choose --</option>
+        @foreach (var i in industries)
+        {
+            <option value="@i.Industry_id">@i.Industry_Name</option>
+        }
+    </select>
+</div>
+</div>
 <div>
     <button @onclick="GoBack" class="back-button">
     <i class="fas fa-arrow-left"></i> Back
@@ -34,13 +38,17 @@
 
 
 
-@if (companies != null)
+@if (companies == null){
+    <p>Sorry,we didn' find anything</p>
+}
+else 
 {
  <ul class="companies-card-list">
         @foreach (var company in companies)
         {
            // <li><strong>@company.company_name</strong> - @company.company_email <a href="/edit_company/@company.company_id">EDIT</a></li>
 <div class="company-card">
+@if(@userId == @company.User_id){
 <AuthorizeView Roles="Admin,Manager">
     <Authorized>    
     <div class="card-actions">
@@ -53,6 +61,7 @@
     </div>
     </Authorized>
 </AuthorizeView >
+}
      
 
     <img src="@company.Img_url" alt="@company.Company_name" class="company-logo" />
@@ -72,6 +81,8 @@
 }
 @code{
   @* gets the companies list *@
+
+    private int userId;
     private List<Company> companies = new();
     private List<Company> fetchedCompanies = new();
 
@@ -79,17 +90,41 @@
 
     private List<Industry>  industries = new();    
         
+    private List<Company> filteredCompaniesByIndustry = new();
     private int companyIdToDelete;
 
     private string searchTerm = "";
     private Guid inputKey = Guid.NewGuid();
     private List<Company> filteredCompanies = new();
-
     
+    private string selectedIndustryId;
+    
+
+     protected override async Task OnInitializedAsync()
+    {
+       var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authenticationState.User;
+
+        var userIdString = user.FindFirst("UserId")?.Value;
+
+        if (int.TryParse(userIdString, out int parsedUserId))
+        {
+            userId = parsedUserId;
+        }
+        fetchedCompanies = await _dbContext.Companies.ToListAsync();
+        companies = fetchedCompanies;
+        fetchedIndustries = await _dbContext.Industries.ToListAsync();
+        industries = fetchedIndustries;
+        
+    }
 
         private void PerformSearch(string term)
     {
         Console.WriteLine(term);
+        //Console.WriteLine($"Filter by Industry{filteredCompaniesByIndustry.Count}");
+        if (filteredCompaniesByIndustry.Count > 0){
+            companies = filteredCompaniesByIndustry;
+        }
         searchTerm = term;
         filteredCompanies = companies
             .Where(c => c.Company_name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
@@ -100,32 +135,80 @@
        
         StateHasChanged();
     }
+    public string SelectedIndustryId
+    {
+        get => selectedIndustryId;
+        set
+        {
+            selectedIndustryId = value;
+            PerformFilter(int.Parse(selectedIndustryId)); 
+        }
+    }
+    private async Task OnFilterChanged(ChangeEventArgs e)
+    {
+        Console.WriteLine($"I count filteredCompanies: {filteredCompanies.Count}");
+        //SelectedIndustryId = e.Value?.ToString();
+        if(filteredCompanies.Count > 0){
+            companies = filteredCompanies;
+        }
+        else{
+            companies = fetchedCompanies;
+        }
+        
+        if (int.TryParse(e.Value?.ToString(), out int industryId))
+        {
+            await PerformFilter(industryId);
+        }
+        else
+        {
+            // Handle invalid selection or reset
+            return;
+        }
+    }
 
-    private void OnIndustrySelected(int id){
-        filteredCompanies = companies
+
+ private async Task PerformFilter(int id)
+    {
+        companies = fetchedCompanies;
+        if(filteredCompanies.Count != 0){
+            companies = filteredCompanies;
+        }
+       
+
+        
+        filteredCompaniesByIndustry = companies
             .Where(c => c.Industry_id == id)
             .ToList();
-            companies = filteredCompanies;
+
+
+        companies = filteredCompaniesByIndustry;
+
+        Console.WriteLine($"Filter by Industry{filteredCompaniesByIndustry.Count}");
+        Console.WriteLine($"Filter by Search{filteredCompanies.Count}");
+        Console.WriteLine($"Fetched Companies{fetchedCompanies.Count}");
+        Console.WriteLine($"Selected Industry{selectedIndustryId}");
+        StateHasChanged();
     }
+    @* private void OnIndustrySelected(int id){
+        filteredCompaniesByIndustry = companies
+            .Where(c => c.Industry_id == id)
+            .ToList();
+            companies = filteredCompaniesByIndustry;
+    } *@
     private async void GoBack()
      {
         Console.WriteLine("I will go back");
         companies = fetchedCompanies;
+        filteredCompanies = [];
+        filteredCompaniesByIndustry = [];
+        selectedIndustryId = "";
         
         
     }
 
     private ConfirmationDialog _confirmationDialog;  
 
-    protected override async Task OnInitializedAsync()
-    {
-       
-        fetchedCompanies = await _dbContext.Companies.ToListAsync();
-        companies = fetchedCompanies;
-        fetchedIndustries = await _dbContext.Industries.ToListAsync();
-        industries = fetchedIndustries;
-        
-    }
+   
   
    
 

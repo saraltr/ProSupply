@@ -42,6 +42,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddHttpClient("API", client =>
 {
     client.BaseAddress = new Uri("http://localhost:5259");
+    //client.BaseAddress = new Uri("https://teamprojecttestdep-cje7cgcuezaqhfdd.canadacentral-01.azurewebsites.net");
 }).ConfigurePrimaryHttpMessageHandler(() =>
 {
     return new HttpClientHandler

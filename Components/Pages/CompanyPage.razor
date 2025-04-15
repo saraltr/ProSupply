@@ -24,37 +24,46 @@
 else {
 
 
-    <div class="card shadow-sm rounded-lg mb-4">
-<AuthorizeView Roles="Admin,Manager">
-    <Authorized>   
-        <div class="card-actions">
-            <a href="/edit_company/@company.Company_id" class="action-btn edit-icon">
-                <i class="fas fa-edit"></i>
-            </a>
-            <button class="action-btn delete-btn" @onclick="() => ShowConfirmDialog(company.Company_id)">
-                <i class="fas fa-trash"></i>
-            </button>
-        </div>
-    </Authorized>
-</AuthorizeView >
-        <div class="card-header">
-            <h3>About @company.Company_name</h3>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <p><strong>📞 Phone:</strong> @company.Company_phone</p>
-                    <p><strong>✉️ Email:</strong> @company.Company_email</p>
-                    <p><strong>📍 Address:</strong> @company.Company_address</p>
+<div class="card shadow-sm rounded-lg mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="mb-0">About @company.Company_name</h3>
+   
+        @if(@userId == @company.User_id){
+        <AuthorizeView Roles="Admin,Manager">
+            <Authorized>
+                <div class="card-actions d-flex gap-2">
+                    <a href="/edit_company/@company.Company_id" class="btn btn-sm btn-outline-primary" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <button class="btn btn-sm btn-outline-danger" title="Delete" @onclick="() => ShowConfirmDialog(company.Company_id)">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </div>
-                <div class="col-md-6">
-                    <p><strong>ℹ️ Description:</strong> @(string.IsNullOrEmpty(company.Company_description) ? "No description available" : company.Company_description)</p>
-                    <p><strong>📌 Industry:</strong> <span class="industry">@GetIndustryName(company.Industry_id)</span></p>
+            </Authorized>
+        </AuthorizeView>}
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4 d-flex align-items-center justify-content-center mb-3">
+                <img src="@($"/{company.Img_url}")" alt="Company Logo" class="img-fluid rounded shadow" style="max-height: 150px;" />
+            </div>
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong><span class="text-primary">📞</span> Phone:</strong> @company.Company_phone</p>
+                        <p><strong><span class="text-primary">✉️</span> Email:</strong> @company.Company_email</p>
+                        <p><strong><span class="text-primary">📍</span> Address:</strong> @company.Company_address</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong><span class="text-primary">ℹ️</span> Description:</strong> @(string.IsNullOrEmpty(company.Company_description) ? "No description available" : company.Company_description)</p>
+                        <p><strong><span class="text-primary">📌</span> Industry:</strong> <span class="industry">@GetIndustryName(company.Industry_id)</span></p>
+                    </div>
                 </div>
             </div>
         </div>
-        
     </div>
+</div>
   
 <ConfirmationDialog @ref="_confirmationDialog" OnConfirm="HandleConfirm" />
 }
@@ -94,6 +103,8 @@ else {
 
         fetchedIndustries = await _dbContext.Industries.ToListAsync();
         industries = fetchedIndustries;
+       
+        
     }
 
     string GetIndustryName(int industryId)
