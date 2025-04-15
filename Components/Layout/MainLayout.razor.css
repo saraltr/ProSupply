@@ -103,12 +103,13 @@ main {
 
 /* Footer styling */
 .blazor-footer {
-    background-color:gray; /* Light gray, very Blazor default */
+    background-color:rgb(52, 51, 51); /* Light gray, very Blazor default */
     padding: 1rem 0;
     border-top: 1px solid #dee2e6;
     text-align: center;
     font-size: 0.9rem;
-    margin-top: 2rem
+    margin-top: 2rem;
+    color: white;
 }
 
 footer {
@@ -132,6 +133,6 @@ footer {
 }
 
 .supply-text {
-    color: navy;
+    color: #8da8c3;
     font-weight: bold;
 }
