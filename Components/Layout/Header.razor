@@ -1,10 +1,10 @@
 @inject NavigationManager NavManager
 @inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @using System.Globalization
-@using CSE_325_group_project.Components.Pages
 @using Microsoft.AspNetCore.Authorization
 @using System.Security.Claims
-@inject AuthenticationStateProvider AuthenticationStateProvider
+@implements IDisposable
 @rendermode InteractiveServer
 
 <div class="top-nav background-image-container">
@@ -33,9 +33,19 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // get authentication state
-        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authenticationState.User;
+        NavManager.LocationChanged += OnLocationChanged;
+        await UpdateRouteDisplayAsync();
+    }
+
+    private async void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        await InvokeAsync(UpdateRouteDisplayAsync);
+    }
+
+    private async Task UpdateRouteDisplayAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
 
         // check if the user is authenticated and get their username
         if (user.Identity?.IsAuthenticated == true)
@@ -53,10 +63,10 @@
         {
             // use the userName if available else use a default message
             FormattedRoute = !string.IsNullOrWhiteSpace(userName)
-            ? $"Welcome back, {userName}!"
-            : "Welcome to ProSupply!";
+                ? $"Welcome back, {userName}!"
+                : "Welcome to ProSupply!";
         }
-        @* for the supplier pages *@
+        // header for the supplier pages
         else if (path.StartsWith("suppliers/"))
         {
             var supplierSlug = path.Replace("suppliers/", "").Replace("-", " ");
@@ -91,7 +101,12 @@
                     break;
             }
         }
+
+        StateHasChanged(); // trigger UI update
     }
 
-    
+    public void Dispose()
+    {
+        NavManager.LocationChanged -= OnLocationChanged;
+    }
 }
