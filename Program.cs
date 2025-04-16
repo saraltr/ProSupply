@@ -31,23 +31,30 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<OrderService>();
 // register supplier services
 builder.Services.AddScoped<SupplierService>();
-// register company servie
+// register company service
 builder.Services.AddScoped<CompanyService>();
 
 // add Razor Components
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+// get the current environment
+var environment = builder.Environment.EnvironmentName;
+
+// set the base URL based on the environment
+var baseAddress = environment == "Development"
+    ? "http://localhost:5000"  // Local development URL
+    : "https://prosupply.azurewebsites.net/";  // Deployment URL
+
 // configure HttpClient for API communication
 builder.Services.AddHttpClient("API", client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5259");
-    //client.BaseAddress = new Uri("https://teamprojecttestdep-cje7cgcuezaqhfdd.canadacentral-01.azurewebsites.net");
+    client.BaseAddress = new Uri(baseAddress);
 }).ConfigurePrimaryHttpMessageHandler(() =>
 {
     return new HttpClientHandler
     {
-        //allow invalid SSL certificates. only for local development.
+        // allow invalid SSL certificates. Only for local development.
         ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
     };
 });
